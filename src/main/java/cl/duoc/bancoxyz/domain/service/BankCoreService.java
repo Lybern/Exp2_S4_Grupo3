@@ -4,20 +4,23 @@ import cl.duoc.bancoxyz.domain.model.Cuenta;
 import cl.duoc.bancoxyz.domain.model.MovimientoAnual;
 import cl.duoc.bancoxyz.domain.model.Transaccion;
 import cl.duoc.bancoxyz.domain.repository.BankRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class BankCoreService {
 
+    private static final Logger log = LoggerFactory.getLogger(BankCoreService.class);
     private final BankRepository bankRepository;
+
+    public BankCoreService(BankRepository bankRepository) {
+        this.bankRepository = bankRepository;
+    }
 
     public Optional<Cuenta> obtenerCuentaPorId(Long cuentaId) {
         return bankRepository.findCuentaById(cuentaId);
@@ -48,11 +51,9 @@ public class BankCoreService {
             throw new IllegalStateException("Fondos insuficientes. Saldo disponible: $" + cuenta.getSaldo());
         }
 
-        // Actualizar saldo
         cuenta.setSaldo(cuenta.getSaldo() - monto);
         bankRepository.saveCuenta(cuenta);
 
-        // Registrar transacción
         Transaccion tx = Transaccion.builder()
                 .cuentaId(cuentaId)
                 .fecha(LocalDate.now().toString())
@@ -63,8 +64,7 @@ public class BankCoreService {
                 .build();
 
         bankRepository.saveTransaccion(tx);
-        log.info("Retiro procesado exitosamente: Cuenta={}, Monto={}, Canal={}, NuevoSaldo={}",
-                cuentaId, monto, canal, cuenta.getSaldo());
+        log.info("Retiro procesado: Cuenta={}, Monto={}, Canal={}, NuevoSaldo={}", cuentaId, monto, canal, cuenta.getSaldo());
         return tx;
     }
 
@@ -89,8 +89,7 @@ public class BankCoreService {
                 .build();
 
         bankRepository.saveTransaccion(tx);
-        log.info("Depósito procesado: Cuenta={}, Monto={}, Canal={}, NuevoSaldo={}",
-                cuentaId, monto, canal, cuenta.getSaldo());
+        log.info("Depósito procesado: Cuenta={}, Monto={}, Canal={}, NuevoSaldo={}", cuentaId, monto, canal, cuenta.getSaldo());
         return tx;
     }
 }

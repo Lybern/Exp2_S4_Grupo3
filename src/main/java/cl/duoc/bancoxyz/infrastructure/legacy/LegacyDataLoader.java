@@ -5,8 +5,8 @@ import cl.duoc.bancoxyz.domain.model.MovimientoAnual;
 import cl.duoc.bancoxyz.domain.model.Transaccion;
 import cl.duoc.bancoxyz.domain.repository.BankRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -15,13 +15,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class LegacyDataLoader {
 
+    private static final Logger log = LoggerFactory.getLogger(LegacyDataLoader.class);
     private final BankRepository bankRepository;
     private final ResourceLoader resourceLoader;
+
+    public LegacyDataLoader(BankRepository bankRepository, ResourceLoader resourceLoader) {
+        this.bankRepository = bankRepository;
+        this.resourceLoader = resourceLoader;
+    }
 
     @PostConstruct
     public void init() {
@@ -37,7 +41,7 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/intereses.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine(); // encabezado: cuenta_id,nombre,saldo,edad,tipo
+                String line = br.readLine();
                 while ((line = br.readLine()) != null) {
                     if (line.trim().isEmpty()) continue;
                     String[] parts = line.split(",", -1);
@@ -100,7 +104,7 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/transacciones.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine(); // encabezado: id,fecha,monto,tipo
+                String line = br.readLine();
                 while ((line = br.readLine()) != null) {
                     if (line.trim().isEmpty()) continue;
                     String[] parts = line.split(",", -1);
@@ -111,7 +115,6 @@ public class LegacyDataLoader {
                         double monto = Math.abs(Double.parseDouble(parts[2].trim()));
                         String tipo = parts[3].trim().toLowerCase();
 
-                        // Asociar transacción de forma distribuida entre las cuentas existentes
                         Long cuentaId = (id % 150) + 100;
 
                         Transaccion tx = Transaccion.builder()
@@ -138,7 +141,7 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/cuentas_anuales.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine(); // encabezado: cuenta_id,fecha,transaccion,monto,descripcion
+                String line = br.readLine();
                 while ((line = br.readLine()) != null) {
                     if (line.trim().isEmpty()) continue;
                     String[] parts = line.split(",", -1);
