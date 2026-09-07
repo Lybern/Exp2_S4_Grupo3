@@ -35,7 +35,6 @@ En concordancia con lo analizado en la Guía de Aprendizaje y las instrucciones 
 | **Audiencia** | Smartphones (iOS / Android) | Navegadores PC / Portal Ejecutivo | Terminales Físicos ATM / Tótems |
 | **Tamaño de Payload** | **Ultraligero** (Top 3 movimientos) | **Completo** (Historial + Dashboard) | **Mínimo Transaccional** |
 | **Operaciones Clave** | Resumen, Saldo rápido, Transferencia | Auditoría, Desglose anual, Métricas | Giro en efectivo, Consulta, Depósito |
-| **Seguridad / Headers** | `X-Mobile-Auth` (Token Móvil) | `X-Web-Session` (Sesión Web + TLS) | `X-ATM-Terminal-ID` + PIN de 4 dígitos |
 
 ---
 
