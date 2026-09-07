@@ -31,6 +31,17 @@ public class ManejadorExcepcionesGlobal {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorRespuestaDto> manejarCuerpoFaltante(org.springframework.http.converter.HttpMessageNotReadableException ex, HttpServletRequest request) {
+        ErrorRespuestaDto error = new ErrorRespuestaDto(
+                HttpStatus.BAD_REQUEST.value(),
+                "Cuerpo de Solicitud Requerido",
+                "Debe enviar un objeto JSON en el Body con los datos requeridos (monto, pin, terminalId).",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorRespuestaDto> manejarErrorGeneral(Exception ex, HttpServletRequest request) {
         ErrorRespuestaDto error = new ErrorRespuestaDto(
