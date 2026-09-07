@@ -20,7 +20,8 @@ public class TransaccionMovilDto {
     @Schema(description = "Detalle breve", example = "Operación registrada: credito")
     private String detalle;
 
-    public TransaccionMovilDto() {}
+    public TransaccionMovilDto() {
+    }
 
     public TransaccionMovilDto(Long id, String fecha, Double monto, String tipo, String detalle) {
         this.id = id;
@@ -30,36 +31,43 @@ public class TransaccionMovilDto {
         this.detalle = detalle;
     }
 
-    public static TransaccionMovilDtoBuilder builder() {
-        return new TransaccionMovilDtoBuilder();
+    public Long getId() {
+        return id;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getFecha() { return fecha; }
-    public void setFecha(String fecha) { this.fecha = fecha; }
-    public Double getMonto() { return monto; }
-    public void setMonto(Double monto) { this.monto = monto; }
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-    public String getDetalle() { return detalle; }
-    public void setDetalle(String detalle) { this.detalle = detalle; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public static class TransaccionMovilDtoBuilder {
-        private Long id;
-        private String fecha;
-        private Double monto;
-        private String tipo;
-        private String detalle;
+    public String getFecha() {
+        return fecha;
+    }
 
-        public TransaccionMovilDtoBuilder id(Long id) { this.id = id; return this; }
-        public TransaccionMovilDtoBuilder fecha(String fecha) { this.fecha = fecha; return this; }
-        public TransaccionMovilDtoBuilder monto(Double monto) { this.monto = monto; return this; }
-        public TransaccionMovilDtoBuilder tipo(String tipo) { this.tipo = tipo; return this; }
-        public TransaccionMovilDtoBuilder detalle(String detalle) { this.detalle = detalle; return this; }
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
 
-        public TransaccionMovilDto build() {
-            return new TransaccionMovilDto(id, fecha, monto, tipo, detalle);
-        }
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDetalle() {
+        return detalle;
+    }
+
+    public void setDetalle(String detalle) {
+        this.detalle = detalle;
     }
 }

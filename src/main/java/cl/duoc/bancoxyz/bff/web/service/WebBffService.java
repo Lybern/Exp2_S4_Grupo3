@@ -46,22 +46,22 @@ public class WebBffService {
                 "soporteReportes", true
         );
 
-        return DetalleCuentaWebDto.builder()
-                .cuentaId(cuenta.getCuentaId())
-                .nombreTitular(cuenta.getNombreTitular())
-                .edadTitular(cuenta.getEdad())
-                .tipoCuenta(cuenta.getTipo().toUpperCase())
-                .saldoContable(cuenta.getSaldo())
-                .lineaSobregiro(sobregiro)
-                .saldoTotalDisponible(saldoTotal)
-                .tasaInteresAnual(tasa)
-                .interesMensualEstimado(interesEstimado)
-                .estadoCuenta(cuenta.getEstado())
-                .totalTransacciones(listaTxDto.size())
-                .historialTransacciones(listaTxDto)
-                .historialAnual(anuales)
-                .metadatosWeb(metadata)
-                .build();
+        return new DetalleCuentaWebDto(
+                cuenta.getCuentaId(),
+                cuenta.getNombreTitular(),
+                cuenta.getEdad(),
+                cuenta.getTipo().toUpperCase(),
+                cuenta.getSaldo(),
+                sobregiro,
+                saldoTotal,
+                tasa,
+                interesEstimado,
+                cuenta.getEstado(),
+                listaTxDto.size(),
+                listaTxDto,
+                anuales,
+                metadata
+        );
     }
 
     public List<TransaccionWebDto> listarTodasTransaccionesWeb(Long cuentaId) {
@@ -91,14 +91,14 @@ public class WebBffService {
         String categoria = "debito".equalsIgnoreCase(tx.getTipo()) || "retiro".equalsIgnoreCase(tx.getTipo())
                 ? "EGRESO_FONDOS" : "INGRESO_FONDOS";
 
-        return TransaccionWebDto.builder()
-                .id(tx.getId())
-                .fecha(tx.getFecha())
-                .monto(tx.getMonto())
-                .tipo(tx.getTipo().toUpperCase())
-                .descripcion(tx.getDescripcion())
-                .canalOrigen(tx.getCanal() != null ? tx.getCanal() : "SISTEMA")
-                .categoria(categoria)
-                .build();
+        return new TransaccionWebDto(
+                tx.getId(),
+                tx.getFecha(),
+                tx.getMonto(),
+                tx.getTipo().toUpperCase(),
+                tx.getDescripcion(),
+                tx.getCanal() != null ? tx.getCanal() : "SISTEMA",
+                categoria
+        );
     }
 }

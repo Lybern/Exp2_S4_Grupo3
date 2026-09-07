@@ -14,7 +14,8 @@ public class SolicitudRetiroDto {
     @Schema(description = "PIN secreto de 4 dígitos", example = "1234", requiredMode = Schema.RequiredMode.REQUIRED)
     private String pin;
 
-    public SolicitudRetiroDto() {}
+    public SolicitudRetiroDto() {
+    }
 
     public SolicitudRetiroDto(Double monto, String codigoTerminal, String pin) {
         this.monto = monto;
@@ -22,10 +23,27 @@ public class SolicitudRetiroDto {
         this.pin = pin;
     }
 
-    public Double getMonto() { return monto; }
-    public void setMonto(Double monto) { this.monto = monto; }
-    public String getCodigoTerminal() { return codigoTerminal; }
-    public void setCodigoTerminal(String codigoTerminal) { this.codigoTerminal = codigoTerminal; }
-    public String getPin() { return pin; }
-    public void setPin(String pin) { this.pin = pin; }
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
+    }
+
+    public String getCodigoTerminal() {
+        return codigoTerminal;
+    }
+
+    public void setCodigoTerminal(String codigoTerminal) {
+        this.codigoTerminal = codigoTerminal;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
 }

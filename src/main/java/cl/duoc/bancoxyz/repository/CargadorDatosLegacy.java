@@ -74,16 +74,16 @@ public class CargadorDatosLegacy {
                         double sobregiro = tipo.contains("corriente") ? 300000.0 : 0.0;
                         double tasaInteres = tipo.contains("ahorro") ? 3.8 : 0.5;
 
-                        Cuenta cuenta = Cuenta.builder()
-                                .cuentaId(cuentaId)
-                                .nombreTitular(nombre)
-                                .saldo(saldo)
-                                .edad(edad)
-                                .tipo(tipo)
-                                .lineaSobregiro(sobregiro)
-                                .tasaInteres(tasaInteres)
-                                .estado("ACTIVA")
-                                .build();
+                        Cuenta cuenta = new Cuenta(
+                                cuentaId,
+                                nombre,
+                                saldo,
+                                edad,
+                                tipo,
+                                sobregiro,
+                                tasaInteres,
+                                "ACTIVA"
+                        );
 
                         bancoRepository.guardarCuenta(cuenta);
                     } catch (Exception ignored) {}
@@ -112,15 +112,15 @@ public class CargadorDatosLegacy {
 
                         Long cuentaId = (id % 150) + 100;
 
-                        Transaccion tx = Transaccion.builder()
-                                .id(id)
-                                .cuentaId(cuentaId)
-                                .fecha(fecha)
-                                .monto(monto)
-                                .tipo(tipo)
-                                .descripcion("Operación registrada: " + tipo)
-                                .canal("LEGACY_BATCH")
-                                .build();
+                        Transaccion tx = new Transaccion(
+                                id,
+                                cuentaId,
+                                fecha,
+                                monto,
+                                tipo,
+                                "Operación registrada: " + tipo,
+                                "LEGACY_BATCH"
+                        );
 
                         bancoRepository.guardarTransaccion(tx);
                     } catch (Exception ignored) {}
@@ -149,13 +149,13 @@ public class CargadorDatosLegacy {
                         String descripcion = datos[4].trim();
                         if (descripcion.isEmpty()) descripcion = "Movimiento histórico anual";
 
-                        MovimientoAnual mov = MovimientoAnual.builder()
-                                .cuentaId(cuentaId)
-                                .fecha(fecha)
-                                .transaccion(transaccion)
-                                .monto(monto)
-                                .descripcion(descripcion)
-                                .build();
+                        MovimientoAnual mov = new MovimientoAnual(
+                                cuentaId,
+                                fecha,
+                                transaccion,
+                                monto,
+                                descripcion
+                        );
 
                         bancoRepository.guardarMovimientoAnual(mov);
                     } catch (Exception ignored) {}

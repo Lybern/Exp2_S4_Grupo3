@@ -18,7 +18,8 @@ public class DashboardWebDto {
     @Schema(description = "Distribución de cuentas por tipo")
     private Map<String, Long> distribucionPorTipo;
 
-    public DashboardWebDto() {}
+    public DashboardWebDto() {
+    }
 
     public DashboardWebDto(Integer totalCuentas, Double capitalTotalCustodiado, Double saldoPromedio, Map<String, Long> distribucionPorTipo) {
         this.totalCuentas = totalCuentas;
@@ -27,12 +28,35 @@ public class DashboardWebDto {
         this.distribucionPorTipo = distribucionPorTipo;
     }
 
-    public Integer getTotalCuentas() { return totalCuentas; }
-    public void setTotalCuentas(Integer totalCuentas) { this.totalCuentas = totalCuentas; }
-    public Double getCapitalTotalCustodiado() { return capitalTotalCustodiado; }
-    public void setCapitalTotalCustodiado(Double capitalTotalCustodiado) { this.capitalTotalCustodiado = capitalTotalCustodiado; }
-    public Double getSaldoPromedio() { return saldoPromedio; }
-    public void setSaldoPromedio(Double saldoPromedio) { this.saldoPromedio = saldoPromedio; }
-    public Map<String, Long> getDistribucionPorTipo() { return distribucionPorTipo; }
-    public void setDistribucionPorTipo(Map<String, Long> distribucionPorTipo) { this.distribucionPorTipo = distribucionPorTipo; }
+    public Integer getTotalCuentas() {
+        return totalCuentas;
+    }
+
+    public void setTotalCuentas(Integer totalCuentas) {
+        this.totalCuentas = totalCuentas;
+    }
+
+    public Double getCapitalTotalCustodiado() {
+        return capitalTotalCustodiado;
+    }
+
+    public void setCapitalTotalCustodiado(Double capitalTotalCustodiado) {
+        this.capitalTotalCustodiado = capitalTotalCustodiado;
+    }
+
+    public Double getSaldoPromedio() {
+        return saldoPromedio;
+    }
+
+    public void setSaldoPromedio(Double saldoPromedio) {
+        this.saldoPromedio = saldoPromedio;
+    }
+
+    public Map<String, Long> getDistribucionPorTipo() {
+        return distribucionPorTipo;
+    }
+
+    public void setDistribucionPorTipo(Map<String, Long> distribucionPorTipo) {
+        this.distribucionPorTipo = distribucionPorTipo;
+    }
 }

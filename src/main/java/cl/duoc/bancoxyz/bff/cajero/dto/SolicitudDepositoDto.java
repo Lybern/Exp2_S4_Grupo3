@@ -11,15 +11,27 @@ public class SolicitudDepositoDto {
     @Schema(description = "Código del cajero automático", example = "ATM-CENTRO-01", requiredMode = Schema.RequiredMode.REQUIRED)
     private String codigoTerminal;
 
-    public SolicitudDepositoDto() {}
+    public SolicitudDepositoDto() {
+    }
 
     public SolicitudDepositoDto(Double monto, String codigoTerminal) {
         this.monto = monto;
         this.codigoTerminal = codigoTerminal;
     }
 
-    public Double getMonto() { return monto; }
-    public void setMonto(Double monto) { this.monto = monto; }
-    public String getCodigoTerminal() { return codigoTerminal; }
-    public void setCodigoTerminal(String codigoTerminal) { this.codigoTerminal = codigoTerminal; }
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
+    }
+
+    public String getCodigoTerminal() {
+        return codigoTerminal;
+    }
+
+    public void setCodigoTerminal(String codigoTerminal) {
+        this.codigoTerminal = codigoTerminal;
+    }
 }

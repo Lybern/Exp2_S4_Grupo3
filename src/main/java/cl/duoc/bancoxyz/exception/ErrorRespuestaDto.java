@@ -12,7 +12,8 @@ public class ErrorRespuestaDto {
     private String mensaje;
     private String ruta;
 
-    public ErrorRespuestaDto() {}
+    public ErrorRespuestaDto() {
+    }
 
     public ErrorRespuestaDto(int codigoEstado, String error, String mensaje, String ruta) {
         this.fechaHora = LocalDateTime.now().toString();
@@ -22,14 +23,43 @@ public class ErrorRespuestaDto {
         this.ruta = ruta;
     }
 
-    public String getFechaHora() { return fechaHora; }
-    public void setFechaHora(String fechaHora) { this.fechaHora = fechaHora; }
-    public int getCodigoEstado() { return codigoEstado; }
-    public void setCodigoEstado(int codigoEstado) { this.codigoEstado = codigoEstado; }
-    public String getError() { return error; }
-    public void setError(String error) { this.error = error; }
-    public String getMensaje() { return mensaje; }
-    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
-    public String getRuta() { return ruta; }
-    public void setRuta(String ruta) { this.ruta = ruta; }
+    public String getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(String fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public int getCodigoEstado() {
+        return codigoEstado;
+    }
+
+    public void setCodigoEstado(int codigoEstado) {
+        this.codigoEstado = codigoEstado;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
 }

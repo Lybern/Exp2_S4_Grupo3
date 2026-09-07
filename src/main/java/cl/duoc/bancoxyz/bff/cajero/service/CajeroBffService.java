@@ -29,13 +29,13 @@ public class CajeroBffService {
         double saldoDisp = cuenta.getSaldo();
         double maxGiro = Math.min(LIMITE_MAXIMO_GIRO_CAJERO, saldoDisp);
 
-        return SaldoCajeroDto.builder()
-                .cuentaId(cuenta.getCuentaId())
-                .saldoDisponible(saldoDisp)
-                .montoMaximoRetiro(maxGiro)
-                .codigoTerminal(terminalId != null ? terminalId : "ATM-TERMINAL-GENERIC")
-                .fechaHora(LocalDateTime.now().toString())
-                .build();
+        return new SaldoCajeroDto(
+                cuenta.getCuentaId(),
+                saldoDisp,
+                maxGiro,
+                terminalId != null ? terminalId : "ATM-TERMINAL-GENERIC",
+                LocalDateTime.now().toString()
+        );
     }
 
     public RespuestaRetiroDto procesarRetiroCajero(Long cuentaId, SolicitudRetiroDto solicitud) {
@@ -43,17 +43,14 @@ public class CajeroBffService {
             throw new IllegalArgumentException("El monto a retirar debe ser mayor a $0.");
         }
 
-        // Regla física de cajero: billetes múltiplos de $5.000
         if (solicitud.getMonto() % 5000 != 0) {
             throw new IllegalArgumentException("El monto debe ser múltiplo de $5.000 para dispensación física de billetes.");
         }
 
-        // Límite por giro
         if (solicitud.getMonto() > LIMITE_MAXIMO_GIRO_CAJERO) {
             throw new IllegalArgumentException("El monto supera el límite máximo permitido por giro en cajero ($" + LIMITE_MAXIMO_GIRO_CAJERO + ").");
         }
 
-        // Validación de PIN
         if (solicitud.getPin() == null || solicitud.getPin().length() != 4) {
             throw new IllegalArgumentException("PIN de seguridad inválido. Debe contener exactamente 4 dígitos.");
         }
@@ -64,15 +61,15 @@ public class CajeroBffService {
 
         String codigoAuth = "AUTH-ATM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        return RespuestaRetiroDto.builder()
-                .codigoAutorizacion(codigoAuth)
-                .transaccionId(tx.getId())
-                .cuentaId(cuentaId)
-                .montoRetirado(solicitud.getMonto())
-                .nuevoSaldo(cuentaActualizada.getSaldo())
-                .dispensacionEfectivoPermitida(true)
-                .mensajeRecibo("Retiro exitoso en terminal " + terminal + ". Retire su dinero y comprobante.")
-                .build();
+        return new RespuestaRetiroDto(
+                codigoAuth,
+                tx.getId(),
+                cuentaId,
+                solicitud.getMonto(),
+                cuentaActualizada.getSaldo(),
+                true,
+                "Retiro exitoso en terminal " + terminal + ". Retire su dinero y comprobante."
+        );
     }
 
     public RespuestaRetiroDto procesarDepositoCajero(Long cuentaId, SolicitudDepositoDto solicitud) {
@@ -86,14 +83,14 @@ public class CajeroBffService {
 
         String codigoAuth = "DEP-ATM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        return RespuestaRetiroDto.builder()
-                .codigoAutorizacion(codigoAuth)
-                .transaccionId(tx.getId())
-                .cuentaId(cuentaId)
-                .montoRetirado(solicitud.getMonto())
-                .nuevoSaldo(cuentaActualizada.getSaldo())
-                .dispensacionEfectivoPermitida(false)
-                .mensajeRecibo("Depósito recibido en terminal " + terminal + ". Fondos acreditados inmediatamente.")
-                .build();
+        return new RespuestaRetiroDto(
+                codigoAuth,
+                tx.getId(),
+                cuentaId,
+                solicitud.getMonto(),
+                cuentaActualizada.getSaldo(),
+                false,
+                "Depósito recibido en terminal " + terminal + ". Fondos acreditados inmediatamente."
+        );
     }
 }

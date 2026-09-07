@@ -24,7 +24,8 @@ public class ResumenCuentaMovilDto {
     @Schema(description = "Mensaje o alerta móvil", example = "Tu cuenta acumula 3.8% de interés anual")
     private String mensajeInformativo;
 
-    public ResumenCuentaMovilDto() {}
+    public ResumenCuentaMovilDto() {
+    }
 
     public ResumenCuentaMovilDto(Long numeroCuenta, String titular, Double saldoDisponible, String tipoCuenta, List<TransaccionMovilDto> ultimosMovimientos, String mensajeInformativo) {
         this.numeroCuenta = numeroCuenta;
@@ -35,40 +36,51 @@ public class ResumenCuentaMovilDto {
         this.mensajeInformativo = mensajeInformativo;
     }
 
-    public static ResumenCuentaMovilDtoBuilder builder() {
-        return new ResumenCuentaMovilDtoBuilder();
+    public Long getNumeroCuenta() {
+        return numeroCuenta;
     }
 
-    public Long getNumeroCuenta() { return numeroCuenta; }
-    public void setNumeroCuenta(Long numeroCuenta) { this.numeroCuenta = numeroCuenta; }
-    public String getTitular() { return titular; }
-    public void setTitular(String titular) { this.titular = titular; }
-    public Double getSaldoDisponible() { return saldoDisponible; }
-    public void setSaldoDisponible(Double saldoDisponible) { this.saldoDisponible = saldoDisponible; }
-    public String getTipoCuenta() { return tipoCuenta; }
-    public void setTipoCuenta(String tipoCuenta) { this.tipoCuenta = tipoCuenta; }
-    public List<TransaccionMovilDto> getUltimosMovimientos() { return ultimosMovimientos; }
-    public void setUltimosMovimientos(List<TransaccionMovilDto> ultimosMovimientos) { this.ultimosMovimientos = ultimosMovimientos; }
-    public String getMensajeInformativo() { return mensajeInformativo; }
-    public void setMensajeInformativo(String mensajeInformativo) { this.mensajeInformativo = mensajeInformativo; }
+    public void setNumeroCuenta(Long numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
+    }
 
-    public static class ResumenCuentaMovilDtoBuilder {
-        private Long numeroCuenta;
-        private String titular;
-        private Double saldoDisponible;
-        private String tipoCuenta;
-        private List<TransaccionMovilDto> ultimosMovimientos;
-        private String mensajeInformativo;
+    public String getTitular() {
+        return titular;
+    }
 
-        public ResumenCuentaMovilDtoBuilder numeroCuenta(Long numeroCuenta) { this.numeroCuenta = numeroCuenta; return this; }
-        public ResumenCuentaMovilDtoBuilder titular(String titular) { this.titular = titular; return this; }
-        public ResumenCuentaMovilDtoBuilder saldoDisponible(Double saldoDisponible) { this.saldoDisponible = saldoDisponible; return this; }
-        public ResumenCuentaMovilDtoBuilder tipoCuenta(String tipoCuenta) { this.tipoCuenta = tipoCuenta; return this; }
-        public ResumenCuentaMovilDtoBuilder ultimosMovimientos(List<TransaccionMovilDto> ultimosMovimientos) { this.ultimosMovimientos = ultimosMovimientos; return this; }
-        public ResumenCuentaMovilDtoBuilder mensajeInformativo(String mensajeInformativo) { this.mensajeInformativo = mensajeInformativo; return this; }
+    public void setTitular(String titular) {
+        this.titular = titular;
+    }
 
-        public ResumenCuentaMovilDto build() {
-            return new ResumenCuentaMovilDto(numeroCuenta, titular, saldoDisponible, tipoCuenta, ultimosMovimientos, mensajeInformativo);
-        }
+    public Double getSaldoDisponible() {
+        return saldoDisponible;
+    }
+
+    public void setSaldoDisponible(Double saldoDisponible) {
+        this.saldoDisponible = saldoDisponible;
+    }
+
+    public String getTipoCuenta() {
+        return tipoCuenta;
+    }
+
+    public void setTipoCuenta(String tipoCuenta) {
+        this.tipoCuenta = tipoCuenta;
+    }
+
+    public List<TransaccionMovilDto> getUltimosMovimientos() {
+        return ultimosMovimientos;
+    }
+
+    public void setUltimosMovimientos(List<TransaccionMovilDto> ultimosMovimientos) {
+        this.ultimosMovimientos = ultimosMovimientos;
+    }
+
+    public String getMensajeInformativo() {
+        return mensajeInformativo;
+    }
+
+    public void setMensajeInformativo(String mensajeInformativo) {
+        this.mensajeInformativo = mensajeInformativo;
     }
 }

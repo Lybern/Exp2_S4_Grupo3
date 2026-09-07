@@ -24,7 +24,6 @@ public class MovilBffService {
         Cuenta cuenta = bancoService.obtenerCuentaPorId(cuentaId)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta móvil no encontrada con ID: " + cuentaId));
 
-        // Solo las últimas 3 transacciones para minimizar datos en redes móviles
         List<Transaccion> transacciones = bancoService.obtenerTransaccionesPorCuenta(cuentaId);
         List<TransaccionMovilDto> ultimos3 = transacciones.stream()
                 .limit(3)
@@ -35,14 +34,14 @@ public class MovilBffService {
                 ? "Tu cuenta genera " + cuenta.getTasaInteres() + "% de interés anual."
                 : "Línea de sobregiro activa: $" + cuenta.getLineaSobregiro();
 
-        return ResumenCuentaMovilDto.builder()
-                .numeroCuenta(cuenta.getCuentaId())
-                .titular(cuenta.getNombreTitular())
-                .saldoDisponible(cuenta.getSaldo())
-                .tipoCuenta(cuenta.getTipo().toUpperCase())
-                .ultimosMovimientos(ultimos3)
-                .mensajeInformativo(mensaje)
-                .build();
+        return new ResumenCuentaMovilDto(
+                cuenta.getCuentaId(),
+                cuenta.getNombreTitular(),
+                cuenta.getSaldo(),
+                cuenta.getTipo().toUpperCase(),
+                ultimos3,
+                mensaje
+        );
     }
 
     public Double consultarSaldoMovil(Long cuentaId) {
@@ -61,12 +60,12 @@ public class MovilBffService {
         boolean esCargo = "retiro".equalsIgnoreCase(tx.getTipo()) || "debito".equalsIgnoreCase(tx.getTipo());
         double montoFinal = esCargo ? -Math.abs(tx.getMonto()) : Math.abs(tx.getMonto());
 
-        return TransaccionMovilDto.builder()
-                .id(tx.getId())
-                .fecha(tx.getFecha())
-                .monto(montoFinal)
-                .tipo(tx.getTipo().toUpperCase())
-                .detalle(tx.getDescripcion())
-                .build();
+        return new TransaccionMovilDto(
+                tx.getId(),
+                tx.getFecha(),
+                montoFinal,
+                tx.getTipo().toUpperCase(),
+                tx.getDescripcion()
+        );
     }
 }

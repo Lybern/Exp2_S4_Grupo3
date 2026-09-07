@@ -14,7 +14,8 @@ public class SolicitudTransferenciaMovilDto {
     @Schema(description = "Comentario opcional", example = "Pago almuerzo")
     private String comentario;
 
-    public SolicitudTransferenciaMovilDto() {}
+    public SolicitudTransferenciaMovilDto() {
+    }
 
     public SolicitudTransferenciaMovilDto(Double monto, Long cuentaDestinoId, String comentario) {
         this.monto = monto;
@@ -22,10 +23,27 @@ public class SolicitudTransferenciaMovilDto {
         this.comentario = comentario;
     }
 
-    public Double getMonto() { return monto; }
-    public void setMonto(Double monto) { this.monto = monto; }
-    public Long getCuentaDestinoId() { return cuentaDestinoId; }
-    public void setCuentaDestinoId(Long cuentaDestinoId) { this.cuentaDestinoId = cuentaDestinoId; }
-    public String getComentario() { return comentario; }
-    public void setComentario(String comentario) { this.comentario = comentario; }
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
+    }
+
+    public Long getCuentaDestinoId() {
+        return cuentaDestinoId;
+    }
+
+    public void setCuentaDestinoId(Long cuentaDestinoId) {
+        this.cuentaDestinoId = cuentaDestinoId;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
 }

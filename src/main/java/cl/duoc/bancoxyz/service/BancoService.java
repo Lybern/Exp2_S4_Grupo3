@@ -54,14 +54,15 @@ public class BancoService {
         cuenta.setSaldo(cuenta.getSaldo() - monto);
         bancoRepository.guardarCuenta(cuenta);
 
-        Transaccion tx = Transaccion.builder()
-                .cuentaId(cuentaId)
-                .fecha(LocalDate.now().toString())
-                .monto(monto)
-                .tipo("RETIRO")
-                .descripcion("Retiro de fondos por canal " + canal + (detalleTerminal != null ? " (" + detalleTerminal + ")" : ""))
-                .canal(canal)
-                .build();
+        Transaccion tx = new Transaccion(
+                null,
+                cuentaId,
+                LocalDate.now().toString(),
+                monto,
+                "RETIRO",
+                "Retiro de fondos por canal " + canal + (detalleTerminal != null ? " (" + detalleTerminal + ")" : ""),
+                canal
+        );
 
         bancoRepository.guardarTransaccion(tx);
         log.info("Retiro procesado: Cuenta={}, Monto=${}, Canal={}, NuevoSaldo=${}", cuentaId, monto, canal, cuenta.getSaldo());
@@ -79,14 +80,15 @@ public class BancoService {
         cuenta.setSaldo(cuenta.getSaldo() + monto);
         bancoRepository.guardarCuenta(cuenta);
 
-        Transaccion tx = Transaccion.builder()
-                .cuentaId(cuentaId)
-                .fecha(LocalDate.now().toString())
-                .monto(monto)
-                .tipo("DEPOSITO")
-                .descripcion("Depósito de fondos por canal " + canal)
-                .canal(canal)
-                .build();
+        Transaccion tx = new Transaccion(
+                null,
+                cuentaId,
+                LocalDate.now().toString(),
+                monto,
+                "DEPOSITO",
+                "Depósito de fondos por canal " + canal,
+                canal
+        );
 
         bancoRepository.guardarTransaccion(tx);
         log.info("Depósito procesado: Cuenta={}, Monto=${}, Canal={}, NuevoSaldo=${}", cuentaId, monto, canal, cuenta.getSaldo());
