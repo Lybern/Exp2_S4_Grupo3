@@ -1,12 +1,12 @@
 package cl.duoc.bancoxyz.bff.web.service;
 
-import cl.duoc.bancoxyz.bff.web.dto.WebAccountDetailResponse;
-import cl.duoc.bancoxyz.bff.web.dto.WebDashboardResponse;
-import cl.duoc.bancoxyz.bff.web.dto.WebTransactionDetailResponse;
-import cl.duoc.bancoxyz.domain.model.Cuenta;
-import cl.duoc.bancoxyz.domain.model.MovimientoAnual;
-import cl.duoc.bancoxyz.domain.model.Transaccion;
-import cl.duoc.bancoxyz.domain.service.BankCoreService;
+import cl.duoc.bancoxyz.bff.web.dto.DashboardWebDto;
+import cl.duoc.bancoxyz.bff.web.dto.DetalleCuentaWebDto;
+import cl.duoc.bancoxyz.bff.web.dto.TransaccionWebDto;
+import cl.duoc.bancoxyz.model.Cuenta;
+import cl.duoc.bancoxyz.model.MovimientoAnual;
+import cl.duoc.bancoxyz.model.Transaccion;
+import cl.duoc.bancoxyz.service.BancoService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,21 +17,21 @@ import java.util.stream.Collectors;
 @Service
 public class WebBffService {
 
-    private final BankCoreService bankCoreService;
+    private final BancoService bancoService;
 
-    public WebBffService(BankCoreService bankCoreService) {
-        this.bankCoreService = bankCoreService;
+    public WebBffService(BancoService bancoService) {
+        this.bancoService = bancoService;
     }
 
-    public WebAccountDetailResponse obtenerDetalleCompletoWeb(Long cuentaId) {
-        Cuenta cuenta = bankCoreService.obtenerCuentaPorId(cuentaId)
+    public DetalleCuentaWebDto obtenerDetalleCompletoWeb(Long cuentaId) {
+        Cuenta cuenta = bancoService.obtenerCuentaPorId(cuentaId)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta Web no encontrada con ID: " + cuentaId));
 
-        List<Transaccion> transacciones = bankCoreService.obtenerTransaccionesPorCuenta(cuentaId);
-        List<MovimientoAnual> anuales = bankCoreService.obtenerMovimientosAnuales(cuentaId);
+        List<Transaccion> transacciones = bancoService.obtenerTransaccionesPorCuenta(cuentaId);
+        List<MovimientoAnual> anuales = bancoService.obtenerMovimientosAnuales(cuentaId);
 
-        List<WebTransactionDetailResponse> txDtoList = transacciones.stream()
-                .map(this::mapToWebTx)
+        List<TransaccionWebDto> listaTxDto = transacciones.stream()
+                .map(this::convertirTransaccionWeb)
                 .collect(Collectors.toList());
 
         double sobregiro = cuenta.getLineaSobregiro() != null ? cuenta.getLineaSobregiro() : 0.0;
@@ -43,10 +43,10 @@ public class WebBffService {
                 "canal", "WEB_DESKTOP",
                 "fechaConsulta", LocalDateTime.now().toString(),
                 "seguridadNivel", "TLS_1_3_WEB_SESSION",
-                "soporteDescargaReporte", true
+                "soporteReportes", true
         );
 
-        return WebAccountDetailResponse.builder()
+        return DetalleCuentaWebDto.builder()
                 .cuentaId(cuenta.getCuentaId())
                 .nombreTitular(cuenta.getNombreTitular())
                 .edadTitular(cuenta.getEdad())
@@ -57,21 +57,21 @@ public class WebBffService {
                 .tasaInteresAnual(tasa)
                 .interesMensualEstimado(interesEstimado)
                 .estadoCuenta(cuenta.getEstado())
-                .totalTransacciones(txDtoList.size())
-                .historialTransacciones(txDtoList)
+                .totalTransacciones(listaTxDto.size())
+                .historialTransacciones(listaTxDto)
                 .historialAnual(anuales)
                 .metadatosWeb(metadata)
                 .build();
     }
 
-    public List<WebTransactionDetailResponse> listarTodasTransaccionesWeb(Long cuentaId) {
-        return bankCoreService.obtenerTransaccionesPorCuenta(cuentaId).stream()
-                .map(this::mapToWebTx)
+    public List<TransaccionWebDto> listarTodasTransaccionesWeb(Long cuentaId) {
+        return bancoService.obtenerTransaccionesPorCuenta(cuentaId).stream()
+                .map(this::convertirTransaccionWeb)
                 .collect(Collectors.toList());
     }
 
-    public WebDashboardResponse obtenerDashboardWeb() {
-        List<Cuenta> todas = bankCoreService.obtenerTodasLasCuentas();
+    public DashboardWebDto obtenerDashboardWeb() {
+        List<Cuenta> todas = bancoService.obtenerTodasLasCuentas();
         int totalCuentas = todas.size();
         double capitalTotal = todas.stream().mapToDouble(Cuenta::getSaldo).sum();
         double promedio = totalCuentas > 0 ? capitalTotal / totalCuentas : 0.0;
@@ -79,7 +79,7 @@ public class WebBffService {
         Map<String, Long> distribucion = todas.stream()
                 .collect(Collectors.groupingBy(c -> c.getTipo().toUpperCase(), Collectors.counting()));
 
-        return new WebDashboardResponse(
+        return new DashboardWebDto(
                 totalCuentas,
                 Math.round(capitalTotal * 100.0) / 100.0,
                 Math.round(promedio * 100.0) / 100.0,
@@ -87,17 +87,17 @@ public class WebBffService {
         );
     }
 
-    private WebTransactionDetailResponse mapToWebTx(Transaccion tx) {
+    private TransaccionWebDto convertirTransaccionWeb(Transaccion tx) {
         String categoria = "debito".equalsIgnoreCase(tx.getTipo()) || "retiro".equalsIgnoreCase(tx.getTipo())
                 ? "EGRESO_FONDOS" : "INGRESO_FONDOS";
 
-        return WebTransactionDetailResponse.builder()
+        return TransaccionWebDto.builder()
                 .id(tx.getId())
                 .fecha(tx.getFecha())
                 .monto(tx.getMonto())
                 .tipo(tx.getTipo().toUpperCase())
                 .descripcion(tx.getDescripcion())
-                .canalOrigen(tx.getCanalOrigen() != null ? tx.getCanalOrigen() : "SISTEMA")
+                .canalOrigen(tx.getCanal() != null ? tx.getCanal() : "SISTEMA")
                 .categoria(categoria)
                 .build();
     }

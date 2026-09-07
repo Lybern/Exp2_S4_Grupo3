@@ -1,12 +1,12 @@
 package cl.duoc.bancoxyz.bff.web.dto;
 
-import cl.duoc.bancoxyz.domain.model.MovimientoAnual;
+import cl.duoc.bancoxyz.model.MovimientoAnual;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
 
 @Schema(description = "Vista enriquecida y completa de la cuenta para navegadores web")
-public class WebAccountDetailResponse {
+public class DetalleCuentaWebDto {
 
     @Schema(description = "Identificador único de la cuenta", example = "101")
     private Long cuentaId;
@@ -42,17 +42,17 @@ public class WebAccountDetailResponse {
     private Integer totalTransacciones;
 
     @Schema(description = "Historial completo de transacciones")
-    private List<WebTransactionDetailResponse> historialTransacciones;
+    private List<TransaccionWebDto> historialTransacciones;
 
     @Schema(description = "Historial consolidado de movimientos anuales")
     private List<MovimientoAnual> historialAnual;
 
-    @Schema(description = "Metadatos técnicos para la interfaz web (paginación, timestamp, entorno)")
+    @Schema(description = "Metadatos técnicos para la interfaz web")
     private Map<String, Object> metadatosWeb;
 
-    public WebAccountDetailResponse() {}
+    public DetalleCuentaWebDto() {}
 
-    public WebAccountDetailResponse(Long cuentaId, String nombreTitular, Integer edadTitular, String tipoCuenta, Double saldoContable, Double lineaSobregiro, Double saldoTotalDisponible, Double tasaInteresAnual, Double interesMensualEstimado, String estadoCuenta, Integer totalTransacciones, List<WebTransactionDetailResponse> historialTransacciones, List<MovimientoAnual> historialAnual, Map<String, Object> metadatosWeb) {
+    public DetalleCuentaWebDto(Long cuentaId, String nombreTitular, Integer edadTitular, String tipoCuenta, Double saldoContable, Double lineaSobregiro, Double saldoTotalDisponible, Double tasaInteresAnual, Double interesMensualEstimado, String estadoCuenta, Integer totalTransacciones, List<TransaccionWebDto> historialTransacciones, List<MovimientoAnual> historialAnual, Map<String, Object> metadatosWeb) {
         this.cuentaId = cuentaId;
         this.nombreTitular = nombreTitular;
         this.edadTitular = edadTitular;
@@ -69,8 +69,8 @@ public class WebAccountDetailResponse {
         this.metadatosWeb = metadatosWeb;
     }
 
-    public static WebAccountDetailResponseBuilder builder() {
-        return new WebAccountDetailResponseBuilder();
+    public static DetalleCuentaWebDtoBuilder builder() {
+        return new DetalleCuentaWebDtoBuilder();
     }
 
     public Long getCuentaId() { return cuentaId; }
@@ -95,14 +95,14 @@ public class WebAccountDetailResponse {
     public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
     public Integer getTotalTransacciones() { return totalTransacciones; }
     public void setTotalTransacciones(Integer totalTransacciones) { this.totalTransacciones = totalTransacciones; }
-    public List<WebTransactionDetailResponse> getHistorialTransacciones() { return historialTransacciones; }
-    public void setHistorialTransacciones(List<WebTransactionDetailResponse> historialTransacciones) { this.historialTransacciones = historialTransacciones; }
+    public List<TransaccionWebDto> getHistorialTransacciones() { return historialTransacciones; }
+    public void setHistorialTransacciones(List<TransaccionWebDto> historialTransacciones) { this.historialTransacciones = historialTransacciones; }
     public List<MovimientoAnual> getHistorialAnual() { return historialAnual; }
     public void setHistorialAnual(List<MovimientoAnual> historialAnual) { this.historialAnual = historialAnual; }
     public Map<String, Object> getMetadatosWeb() { return metadatosWeb; }
     public void setMetadatosWeb(Map<String, Object> metadatosWeb) { this.metadatosWeb = metadatosWeb; }
 
-    public static class WebAccountDetailResponseBuilder {
+    public static class DetalleCuentaWebDtoBuilder {
         private Long cuentaId;
         private String nombreTitular;
         private Integer edadTitular;
@@ -114,27 +114,27 @@ public class WebAccountDetailResponse {
         private Double interesMensualEstimado;
         private String estadoCuenta;
         private Integer totalTransacciones;
-        private List<WebTransactionDetailResponse> historialTransacciones;
+        private List<TransaccionWebDto> historialTransacciones;
         private List<MovimientoAnual> historialAnual;
         private Map<String, Object> metadatosWeb;
 
-        public WebAccountDetailResponseBuilder cuentaId(Long cuentaId) { this.cuentaId = cuentaId; return this; }
-        public WebAccountDetailResponseBuilder nombreTitular(String nombreTitular) { this.nombreTitular = nombreTitular; return this; }
-        public WebAccountDetailResponseBuilder edadTitular(Integer edadTitular) { this.edadTitular = edadTitular; return this; }
-        public WebAccountDetailResponseBuilder tipoCuenta(String tipoCuenta) { this.tipoCuenta = tipoCuenta; return this; }
-        public WebAccountDetailResponseBuilder saldoContable(Double saldoContable) { this.saldoContable = saldoContable; return this; }
-        public WebAccountDetailResponseBuilder lineaSobregiro(Double lineaSobregiro) { this.lineaSobregiro = lineaSobregiro; return this; }
-        public WebAccountDetailResponseBuilder saldoTotalDisponible(Double saldoTotalDisponible) { this.saldoTotalDisponible = saldoTotalDisponible; return this; }
-        public WebAccountDetailResponseBuilder tasaInteresAnual(Double tasaInteresAnual) { this.tasaInteresAnual = tasaInteresAnual; return this; }
-        public WebAccountDetailResponseBuilder interesMensualEstimado(Double interesMensualEstimado) { this.interesMensualEstimado = interesMensualEstimado; return this; }
-        public WebAccountDetailResponseBuilder estadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; return this; }
-        public WebAccountDetailResponseBuilder totalTransacciones(Integer totalTransacciones) { this.totalTransacciones = totalTransacciones; return this; }
-        public WebAccountDetailResponseBuilder historialTransacciones(List<WebTransactionDetailResponse> historialTransacciones) { this.historialTransacciones = historialTransacciones; return this; }
-        public WebAccountDetailResponseBuilder historialAnual(List<MovimientoAnual> historialAnual) { this.historialAnual = historialAnual; return this; }
-        public WebAccountDetailResponseBuilder metadatosWeb(Map<String, Object> metadatosWeb) { this.metadatosWeb = metadatosWeb; return this; }
+        public DetalleCuentaWebDtoBuilder cuentaId(Long cuentaId) { this.cuentaId = cuentaId; return this; }
+        public DetalleCuentaWebDtoBuilder nombreTitular(String nombreTitular) { this.nombreTitular = nombreTitular; return this; }
+        public DetalleCuentaWebDtoBuilder edadTitular(Integer edadTitular) { this.edadTitular = edadTitular; return this; }
+        public DetalleCuentaWebDtoBuilder tipoCuenta(String tipoCuenta) { this.tipoCuenta = tipoCuenta; return this; }
+        public DetalleCuentaWebDtoBuilder saldoContable(Double saldoContable) { this.saldoContable = saldoContable; return this; }
+        public DetalleCuentaWebDtoBuilder lineaSobregiro(Double lineaSobregiro) { this.lineaSobregiro = lineaSobregiro; return this; }
+        public DetalleCuentaWebDtoBuilder saldoTotalDisponible(Double saldoTotalDisponible) { this.saldoTotalDisponible = saldoTotalDisponible; return this; }
+        public DetalleCuentaWebDtoBuilder tasaInteresAnual(Double tasaInteresAnual) { this.tasaInteresAnual = tasaInteresAnual; return this; }
+        public DetalleCuentaWebDtoBuilder interesMensualEstimado(Double interesMensualEstimado) { this.interesMensualEstimado = interesMensualEstimado; return this; }
+        public DetalleCuentaWebDtoBuilder estadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; return this; }
+        public DetalleCuentaWebDtoBuilder totalTransacciones(Integer totalTransacciones) { this.totalTransacciones = totalTransacciones; return this; }
+        public DetalleCuentaWebDtoBuilder historialTransacciones(List<TransaccionWebDto> historialTransacciones) { this.historialTransacciones = historialTransacciones; return this; }
+        public DetalleCuentaWebDtoBuilder historialAnual(List<MovimientoAnual> historialAnual) { this.historialAnual = historialAnual; return this; }
+        public DetalleCuentaWebDtoBuilder metadatosWeb(Map<String, Object> metadatosWeb) { this.metadatosWeb = metadatosWeb; return this; }
 
-        public WebAccountDetailResponse build() {
-            return new WebAccountDetailResponse(cuentaId, nombreTitular, edadTitular, tipoCuenta, saldoContable, lineaSobregiro, saldoTotalDisponible, tasaInteresAnual, interesMensualEstimado, estadoCuenta, totalTransacciones, historialTransacciones, historialAnual, metadatosWeb);
+        public DetalleCuentaWebDto build() {
+            return new DetalleCuentaWebDto(cuentaId, nombreTitular, edadTitular, tipoCuenta, saldoContable, lineaSobregiro, saldoTotalDisponible, tasaInteresAnual, interesMensualEstimado, estadoCuenta, totalTransacciones, historialTransacciones, historialAnual, metadatosWeb);
         }
     }
 }

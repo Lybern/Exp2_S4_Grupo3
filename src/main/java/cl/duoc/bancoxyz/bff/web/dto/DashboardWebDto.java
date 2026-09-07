@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 
 @Schema(description = "Métricas consolidadas para el Dashboard Administrativo Web")
-public class WebDashboardResponse {
+public class DashboardWebDto {
 
     @Schema(description = "Total de cuentas administradas", example = "100")
     private Integer totalCuentas;
@@ -15,12 +15,12 @@ public class WebDashboardResponse {
     @Schema(description = "Promedio de saldo por cuenta", example = "150000.0")
     private Double saldoPromedio;
 
-    @Schema(description = "Distribución de cuentas por tipo (ahorro, corriente, préstamo)")
+    @Schema(description = "Distribución de cuentas por tipo")
     private Map<String, Long> distribucionPorTipo;
 
-    public WebDashboardResponse() {}
+    public DashboardWebDto() {}
 
-    public WebDashboardResponse(Integer totalCuentas, Double capitalTotalCustodiado, Double saldoPromedio, Map<String, Long> distribucionPorTipo) {
+    public DashboardWebDto(Integer totalCuentas, Double capitalTotalCustodiado, Double saldoPromedio, Map<String, Long> distribucionPorTipo) {
         this.totalCuentas = totalCuentas;
         this.capitalTotalCustodiado = capitalTotalCustodiado;
         this.saldoPromedio = saldoPromedio;

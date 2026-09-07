@@ -2,8 +2,8 @@ package cl.duoc.bancoxyz.bff.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Detalle completo de transacción para interfaces web de escritorio")
-public class WebTransactionDetailResponse {
+@Schema(description = "Detalle completo de transacción para portal web")
+public class TransaccionWebDto {
 
     @Schema(description = "ID único de la transacción", example = "105")
     private Long id;
@@ -20,15 +20,15 @@ public class WebTransactionDetailResponse {
     @Schema(description = "Descripción detallada", example = "Operación registrada: credito")
     private String descripcion;
 
-    @Schema(description = "Canal que originó la transacción", example = "LEGACY_BATCH")
+    @Schema(description = "Canal de origen", example = "LEGACY_BATCH")
     private String canalOrigen;
 
-    @Schema(description = "Categoría financiera calculada", example = "ABONO_FONDOS")
+    @Schema(description = "Categoría financiera calculada", example = "INGRESO_FONDOS")
     private String categoria;
 
-    public WebTransactionDetailResponse() {}
+    public TransaccionWebDto() {}
 
-    public WebTransactionDetailResponse(Long id, String fecha, Double monto, String tipo, String descripcion, String canalOrigen, String categoria) {
+    public TransaccionWebDto(Long id, String fecha, Double monto, String tipo, String descripcion, String canalOrigen, String categoria) {
         this.id = id;
         this.fecha = fecha;
         this.monto = monto;
@@ -38,8 +38,8 @@ public class WebTransactionDetailResponse {
         this.categoria = categoria;
     }
 
-    public static WebTransactionDetailResponseBuilder builder() {
-        return new WebTransactionDetailResponseBuilder();
+    public static TransaccionWebDtoBuilder builder() {
+        return new TransaccionWebDtoBuilder();
     }
 
     public Long getId() { return id; }
@@ -57,7 +57,7 @@ public class WebTransactionDetailResponse {
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
-    public static class WebTransactionDetailResponseBuilder {
+    public static class TransaccionWebDtoBuilder {
         private Long id;
         private String fecha;
         private Double monto;
@@ -66,16 +66,16 @@ public class WebTransactionDetailResponse {
         private String canalOrigen;
         private String categoria;
 
-        public WebTransactionDetailResponseBuilder id(Long id) { this.id = id; return this; }
-        public WebTransactionDetailResponseBuilder fecha(String fecha) { this.fecha = fecha; return this; }
-        public WebTransactionDetailResponseBuilder monto(Double monto) { this.monto = monto; return this; }
-        public WebTransactionDetailResponseBuilder tipo(String tipo) { this.tipo = tipo; return this; }
-        public WebTransactionDetailResponseBuilder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
-        public WebTransactionDetailResponseBuilder canalOrigen(String canalOrigen) { this.canalOrigen = canalOrigen; return this; }
-        public WebTransactionDetailResponseBuilder categoria(String categoria) { this.categoria = categoria; return this; }
+        public TransaccionWebDtoBuilder id(Long id) { this.id = id; return this; }
+        public TransaccionWebDtoBuilder fecha(String fecha) { this.fecha = fecha; return this; }
+        public TransaccionWebDtoBuilder monto(Double monto) { this.monto = monto; return this; }
+        public TransaccionWebDtoBuilder tipo(String tipo) { this.tipo = tipo; return this; }
+        public TransaccionWebDtoBuilder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
+        public TransaccionWebDtoBuilder canalOrigen(String canalOrigen) { this.canalOrigen = canalOrigen; return this; }
+        public TransaccionWebDtoBuilder categoria(String categoria) { this.categoria = categoria; return this; }
 
-        public WebTransactionDetailResponse build() {
-            return new WebTransactionDetailResponse(id, fecha, monto, tipo, descripcion, canalOrigen, categoria);
+        public TransaccionWebDto build() {
+            return new TransaccionWebDto(id, fecha, monto, tipo, descripcion, canalOrigen, categoria);
         }
     }
 }

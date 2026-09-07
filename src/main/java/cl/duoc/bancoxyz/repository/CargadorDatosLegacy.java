@@ -1,9 +1,8 @@
-package cl.duoc.bancoxyz.infrastructure.legacy;
+package cl.duoc.bancoxyz.repository;
 
-import cl.duoc.bancoxyz.domain.model.Cuenta;
-import cl.duoc.bancoxyz.domain.model.MovimientoAnual;
-import cl.duoc.bancoxyz.domain.model.Transaccion;
-import cl.duoc.bancoxyz.domain.repository.BankRepository;
+import cl.duoc.bancoxyz.model.Cuenta;
+import cl.duoc.bancoxyz.model.MovimientoAnual;
+import cl.duoc.bancoxyz.model.Transaccion;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,24 +15,24 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class LegacyDataLoader {
+public class CargadorDatosLegacy {
 
-    private static final Logger log = LoggerFactory.getLogger(LegacyDataLoader.class);
-    private final BankRepository bankRepository;
+    private static final Logger log = LoggerFactory.getLogger(CargadorDatosLegacy.class);
+    private final BancoRepository bancoRepository;
     private final ResourceLoader resourceLoader;
 
-    public LegacyDataLoader(BankRepository bankRepository, ResourceLoader resourceLoader) {
-        this.bankRepository = bankRepository;
+    public CargadorDatosLegacy(BancoRepository bancoRepository, ResourceLoader resourceLoader) {
+        this.bancoRepository = bancoRepository;
         this.resourceLoader = resourceLoader;
     }
 
     @PostConstruct
-    public void init() {
-        log.info("Cargando datos legacy del Banco XYZ...");
+    public void cargarDatos() {
+        log.info("Iniciando carga de datos legacy del Banco XYZ...");
         cargarCuentas();
         cargarTransacciones();
         cargarCuentasAnuales();
-        log.info("Carga de datos legacy completada con éxito. Total cuentas: {}", bankRepository.findAllCuentas().size());
+        log.info("Datos cargados correctamente. Total cuentas registradas: {}", bancoRepository.obtenerTodasLasCuentas().size());
     }
 
     private void cargarCuentas() {
@@ -41,40 +40,36 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/intereses.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine();
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) continue;
-                    String[] parts = line.split(",", -1);
-                    if (parts.length < 5) continue;
+                String linea = br.readLine();
+                while ((linea = br.readLine()) != null) {
+                    if (linea.trim().isEmpty()) continue;
+                    String[] datos = linea.split(",", -1);
+                    if (datos.length < 5) continue;
                     try {
-                        String idStr = parts[0].trim();
+                        String idStr = datos[0].trim();
                         if (idStr.isEmpty()) continue;
                         Long cuentaId = Long.parseLong(idStr);
 
-                        String nombre = parts[1].trim();
+                        String nombre = datos[1].trim();
                         if (nombre.isEmpty() || "Unknown".equalsIgnoreCase(nombre)) {
                             nombre = "Cliente " + cuentaId;
                         }
 
                         double saldo = 0.0;
-                        if (!parts[2].trim().isEmpty()) {
-                            saldo = Math.max(0.0, Double.parseDouble(parts[2].trim()));
+                        if (!datos[2].trim().isEmpty()) {
+                            saldo = Math.max(0.0, Double.parseDouble(datos[2].trim()));
                         }
 
                         int edad = 30;
-                        if (!parts[3].trim().isEmpty()) {
+                        if (!datos[3].trim().isEmpty()) {
                             try {
-                                int parsedEdad = Integer.parseInt(parts[3].trim());
-                                if (parsedEdad >= 18 && parsedEdad <= 100) {
-                                    edad = parsedEdad;
-                                }
+                                int edadLeida = Integer.parseInt(datos[3].trim());
+                                if (edadLeida >= 18 && edadLeida <= 100) edad = edadLeida;
                             } catch (NumberFormatException ignored) {}
                         }
 
-                        String tipo = parts[4].trim().toLowerCase();
-                        if (tipo.equals("-1") || tipo.isEmpty()) {
-                            tipo = "cuenta_corriente";
-                        }
+                        String tipo = datos[4].trim().toLowerCase();
+                        if (tipo.equals("-1") || tipo.isEmpty()) tipo = "cuenta_corriente";
 
                         double sobregiro = tipo.contains("corriente") ? 300000.0 : 0.0;
                         double tasaInteres = tipo.contains("ahorro") ? 3.8 : 0.5;
@@ -90,7 +85,7 @@ public class LegacyDataLoader {
                                 .estado("ACTIVA")
                                 .build();
 
-                        bankRepository.saveCuenta(cuenta);
+                        bancoRepository.guardarCuenta(cuenta);
                     } catch (Exception ignored) {}
                 }
             }
@@ -104,16 +99,16 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/transacciones.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine();
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) continue;
-                    String[] parts = line.split(",", -1);
-                    if (parts.length < 4) continue;
+                String linea = br.readLine();
+                while ((linea = br.readLine()) != null) {
+                    if (linea.trim().isEmpty()) continue;
+                    String[] datos = linea.split(",", -1);
+                    if (datos.length < 4) continue;
                     try {
-                        Long id = Long.parseLong(parts[0].trim());
-                        String fecha = parts[1].trim();
-                        double monto = Math.abs(Double.parseDouble(parts[2].trim()));
-                        String tipo = parts[3].trim().toLowerCase();
+                        Long id = Long.parseLong(datos[0].trim());
+                        String fecha = datos[1].trim();
+                        double monto = Math.abs(Double.parseDouble(datos[2].trim()));
+                        String tipo = datos[3].trim().toLowerCase();
 
                         Long cuentaId = (id % 150) + 100;
 
@@ -124,10 +119,10 @@ public class LegacyDataLoader {
                                 .monto(monto)
                                 .tipo(tipo)
                                 .descripcion("Operación registrada: " + tipo)
-                                .canalOrigen("LEGACY_BATCH")
+                                .canal("LEGACY_BATCH")
                                 .build();
 
-                        bankRepository.saveTransaccion(tx);
+                        bancoRepository.guardarTransaccion(tx);
                     } catch (Exception ignored) {}
                 }
             }
@@ -141,20 +136,18 @@ public class LegacyDataLoader {
             Resource resource = resourceLoader.getResource("classpath:data/cuentas_anuales.csv");
             if (!resource.exists()) return;
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
-                String line = br.readLine();
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) continue;
-                    String[] parts = line.split(",", -1);
-                    if (parts.length < 5) continue;
+                String linea = br.readLine();
+                while ((linea = br.readLine()) != null) {
+                    if (linea.trim().isEmpty()) continue;
+                    String[] datos = linea.split(",", -1);
+                    if (datos.length < 5) continue;
                     try {
-                        Long cuentaId = Long.parseLong(parts[0].trim());
-                        String fecha = parts[1].trim();
-                        String transaccion = parts[2].trim();
-                        double monto = Math.abs(Double.parseDouble(parts[3].trim()));
-                        String descripcion = parts[4].trim();
-                        if (descripcion.isEmpty()) {
-                            descripcion = "Movimiento histórico anual";
-                        }
+                        Long cuentaId = Long.parseLong(datos[0].trim());
+                        String fecha = datos[1].trim();
+                        String transaccion = datos[2].trim();
+                        double monto = Math.abs(Double.parseDouble(datos[3].trim()));
+                        String descripcion = datos[4].trim();
+                        if (descripcion.isEmpty()) descripcion = "Movimiento histórico anual";
 
                         MovimientoAnual mov = MovimientoAnual.builder()
                                 .cuentaId(cuentaId)
@@ -164,7 +157,7 @@ public class LegacyDataLoader {
                                 .descripcion(descripcion)
                                 .build();
 
-                        bankRepository.saveMovimientoAnual(mov);
+                        bancoRepository.guardarMovimientoAnual(mov);
                     } catch (Exception ignored) {}
                 }
             }

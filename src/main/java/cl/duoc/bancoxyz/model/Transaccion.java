@@ -1,4 +1,4 @@
-package cl.duoc.bancoxyz.domain.model;
+package cl.duoc.bancoxyz.model;
 
 public class Transaccion {
     private Long id;
@@ -7,18 +7,18 @@ public class Transaccion {
     private Double monto;
     private String tipo;
     private String descripcion;
-    private String canalOrigen;
+    private String canal;
 
     public Transaccion() {}
 
-    public Transaccion(Long id, Long cuentaId, String fecha, Double monto, String tipo, String descripcion, String canalOrigen) {
+    public Transaccion(Long id, Long cuentaId, String fecha, Double monto, String tipo, String descripcion, String canal) {
         this.id = id;
         this.cuentaId = cuentaId;
         this.fecha = fecha;
         this.monto = monto;
         this.tipo = tipo;
         this.descripcion = descripcion;
-        this.canalOrigen = canalOrigen;
+        this.canal = canal;
     }
 
     public static TransaccionBuilder builder() {
@@ -37,8 +37,8 @@ public class Transaccion {
     public void setTipo(String tipo) { this.tipo = tipo; }
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public String getCanalOrigen() { return canalOrigen; }
-    public void setCanalOrigen(String canalOrigen) { this.canalOrigen = canalOrigen; }
+    public String getCanal() { return canal; }
+    public void setCanal(String canal) { this.canal = canal; }
 
     public static class TransaccionBuilder {
         private Long id;
@@ -47,7 +47,7 @@ public class Transaccion {
         private Double monto;
         private String tipo;
         private String descripcion;
-        private String canalOrigen;
+        private String canal;
 
         public TransaccionBuilder id(Long id) { this.id = id; return this; }
         public TransaccionBuilder cuentaId(Long cuentaId) { this.cuentaId = cuentaId; return this; }
@@ -55,10 +55,10 @@ public class Transaccion {
         public TransaccionBuilder monto(Double monto) { this.monto = monto; return this; }
         public TransaccionBuilder tipo(String tipo) { this.tipo = tipo; return this; }
         public TransaccionBuilder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
-        public TransaccionBuilder canalOrigen(String canalOrigen) { this.canalOrigen = canalOrigen; return this; }
+        public TransaccionBuilder canal(String canal) { this.canal = canal; return this; }
 
         public Transaccion build() {
-            return new Transaccion(id, cuentaId, fecha, monto, tipo, descripcion, canalOrigen);
+            return new Transaccion(id, cuentaId, fecha, monto, tipo, descripcion, canal);
         }
     }
 }

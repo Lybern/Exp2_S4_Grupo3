@@ -1,4 +1,4 @@
-package cl.duoc.bancoxyz.domain.model;
+package cl.duoc.bancoxyz.model;
 
 public class Cuenta {
     private Long cuentaId;
