@@ -1,6 +1,6 @@
 # Banco XYZ - Arquitectura Backend for Frontend (BFF)
 ### Asignatura: Desarrollo Backend III (PBY2203) - Experiencia 2 / Semana 4
-**Integrantes:** Grupo 3  
+**Integrantes:** Leonardo Bustamante - Carolina Delgado  
 **Repositorio GitHub:** [https://github.com/Lybern/Exp2_S4_Grupo3](https://github.com/Lybern/Exp2_S4_Grupo3)
 
 ---
