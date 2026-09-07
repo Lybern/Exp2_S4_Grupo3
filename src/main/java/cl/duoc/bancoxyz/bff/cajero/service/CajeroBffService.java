@@ -1,96 +1,86 @@
 package cl.duoc.bancoxyz.bff.cajero.service;
 
+import cl.duoc.bancoxyz.bff.cajero.dto.ConsultaSaldoCajeroDto;
 import cl.duoc.bancoxyz.bff.cajero.dto.RespuestaRetiroDto;
-import cl.duoc.bancoxyz.bff.cajero.dto.SaldoCajeroDto;
-import cl.duoc.bancoxyz.bff.cajero.dto.SolicitudDepositoDto;
-import cl.duoc.bancoxyz.bff.cajero.dto.SolicitudRetiroDto;
+import cl.duoc.bancoxyz.bff.cajero.dto.SolicitudRetiroCajeroDto;
 import cl.duoc.bancoxyz.model.Cuenta;
 import cl.duoc.bancoxyz.model.Transaccion;
 import cl.duoc.bancoxyz.service.BancoService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
 public class CajeroBffService {
 
-    private static final double LIMITE_MAXIMO_GIRO_CAJERO = 200000.0;
+    private static final long LIMITE_GIRO_ATM = 200000L;
+    private static final long MULTIPLO_BILLETE = 5000L;
+
     private final BancoService bancoService;
 
     public CajeroBffService(BancoService bancoService) {
         this.bancoService = bancoService;
     }
 
-    public SaldoCajeroDto consultarSaldoCajero(Long cuentaId, String terminalId) {
+    public ConsultaSaldoCajeroDto consultarSaldoCajero(Long cuentaId, String terminalId) {
         Cuenta cuenta = bancoService.obtenerCuentaPorId(cuentaId)
-                .orElseThrow(() -> new IllegalArgumentException("Tarjeta o Cuenta no válida en cajero (ID: " + cuentaId + ")"));
+                .orElseThrow(() -> new IllegalArgumentException("Tarjeta o cuenta no válida: " + cuentaId));
 
-        double saldoDisp = cuenta.getSaldo();
-        double maxGiro = Math.min(LIMITE_MAXIMO_GIRO_CAJERO, saldoDisp);
+        long saldo = cuenta.getSaldo() != null ? cuenta.getSaldo() : 0L;
+        long limiteDisponible = Math.min(saldo, LIMITE_GIRO_ATM);
 
-        return new SaldoCajeroDto(
+        return new ConsultaSaldoCajeroDto(
                 cuenta.getCuentaId(),
-                saldoDisp,
-                maxGiro,
-                terminalId != null ? terminalId : "ATM-TERMINAL-GENERIC",
-                LocalDateTime.now().toString()
+                cuenta.getNombreTitular(),
+                saldo,
+                limiteDisponible,
+                terminalId != null ? terminalId : "ATM-DEFAULT",
+                "ACTIVA".equalsIgnoreCase(cuenta.getEstado()),
+                "Seleccione el monto que desea retirar. Límite máximo por giro: $" + LIMITE_GIRO_ATM
         );
     }
 
-    public RespuestaRetiroDto procesarRetiroCajero(Long cuentaId, SolicitudRetiroDto solicitud) {
+    public RespuestaRetiroDto procesarRetiroCajero(Long cuentaId, SolicitudRetiroCajeroDto solicitud) {
+        if (solicitud.getPin() == null || solicitud.getPin().trim().length() != 4) {
+            throw new IllegalArgumentException("PIN de seguridad inválido. Debe contener 4 dígitos.");
+        }
+
         if (solicitud.getMonto() == null || solicitud.getMonto() <= 0) {
             throw new IllegalArgumentException("El monto a retirar debe ser mayor a $0.");
         }
 
-        if (solicitud.getMonto() % 5000 != 0) {
-            throw new IllegalArgumentException("El monto debe ser múltiplo de $5.000 para dispensación física de billetes.");
+        if (solicitud.getMonto() % MULTIPLO_BILLETE != 0) {
+            throw new IllegalArgumentException("El monto solicitado ($" + solicitud.getMonto() + ") debe ser múltiplo de $" + MULTIPLO_BILLETE + " (billetes disponibles de $5.000, $10.000 y $20.000).");
         }
 
-        if (solicitud.getMonto() > LIMITE_MAXIMO_GIRO_CAJERO) {
-            throw new IllegalArgumentException("El monto supera el límite máximo permitido por giro en cajero ($" + LIMITE_MAXIMO_GIRO_CAJERO + ").");
+        if (solicitud.getMonto() > LIMITE_GIRO_ATM) {
+            throw new IllegalArgumentException("El monto solicitado ($" + solicitud.getMonto() + ") supera el límite máximo por giro en cajero ($" + LIMITE_GIRO_ATM + ").");
         }
 
-        if (solicitud.getPin() == null || solicitud.getPin().length() != 4) {
-            throw new IllegalArgumentException("PIN de seguridad inválido. Debe contener exactamente 4 dígitos.");
-        }
-
-        String terminal = solicitud.getCodigoTerminal() != null ? solicitud.getCodigoTerminal() : "ATM-001";
-        Transaccion tx = bancoService.procesarRetiro(cuentaId, solicitud.getMonto(), "CAJERO_ATM", terminal);
-        Cuenta cuentaActualizada = bancoService.obtenerCuentaPorId(cuentaId).orElseThrow();
-
-        String codigoAuth = "AUTH-ATM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-
-        return new RespuestaRetiroDto(
-                codigoAuth,
-                tx.getId(),
+        Transaccion tx = bancoService.procesarRetiro(
                 cuentaId,
                 solicitud.getMonto(),
-                cuentaActualizada.getSaldo(),
-                true,
-                "Retiro exitoso en terminal " + terminal + ". Retire su dinero y comprobante."
+                "CAJERO_ATM",
+                "Giro ATM Terminal " + (solicitud.getTerminalId() != null ? solicitud.getTerminalId() : "ATM-GENERIC")
         );
-    }
 
-    public RespuestaRetiroDto procesarDepositoCajero(Long cuentaId, SolicitudDepositoDto solicitud) {
-        if (solicitud.getMonto() == null || solicitud.getMonto() <= 0) {
-            throw new IllegalArgumentException("El monto a depositar debe ser mayor a $0.");
-        }
+        Cuenta cuentaActualizada = bancoService.obtenerCuentaPorId(cuentaId)
+                .orElseThrow(() -> new IllegalStateException("Error al consultar cuenta post-giro"));
 
-        String terminal = solicitud.getCodigoTerminal() != null ? solicitud.getCodigoTerminal() : "ATM-DEPOSIT-01";
-        Transaccion tx = bancoService.procesarDeposito(cuentaId, solicitud.getMonto(), "CAJERO_DEPOSITO");
-        Cuenta cuentaActualizada = bancoService.obtenerCuentaPorId(cuentaId).orElseThrow();
-
-        String codigoAuth = "DEP-ATM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String codAuth = "AUTH-ATM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        NumberFormat formatoChileno = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL"));
+        String montoFormateado = formatoChileno.format(solicitud.getMonto());
 
         return new RespuestaRetiroDto(
-                codigoAuth,
-                tx.getId(),
                 cuentaId,
                 solicitud.getMonto(),
                 cuentaActualizada.getSaldo(),
-                false,
-                "Depósito recibido en terminal " + terminal + ". Fondos acreditados inmediatamente."
+                codAuth,
+                tx.getId(),
+                true,
+                "Retiro exitoso por " + montoFormateado + ". Por favor retire su dinero del dispensador y su comprobante."
         );
     }
 }

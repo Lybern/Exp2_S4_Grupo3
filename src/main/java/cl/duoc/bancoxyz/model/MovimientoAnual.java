@@ -5,13 +5,13 @@ public class MovimientoAnual {
     private Long cuentaId;
     private String fecha;
     private String transaccion;
-    private Double monto;
+    private Long monto;
     private String descripcion;
 
     public MovimientoAnual() {
     }
 
-    public MovimientoAnual(Long cuentaId, String fecha, String transaccion, Double monto, String descripcion) {
+    public MovimientoAnual(Long cuentaId, String fecha, String transaccion, Long monto, String descripcion) {
         this.cuentaId = cuentaId;
         this.fecha = fecha;
         this.transaccion = transaccion;
@@ -43,11 +43,11 @@ public class MovimientoAnual {
         this.transaccion = transaccion;
     }
 
-    public Double getMonto() {
+    public Long getMonto() {
         return monto;
     }
 
-    public void setMonto(Double monto) {
+    public void setMonto(Long monto) {
         this.monto = monto;
     }
 

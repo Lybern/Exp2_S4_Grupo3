@@ -4,8 +4,6 @@ import cl.duoc.bancoxyz.model.Cuenta;
 import cl.duoc.bancoxyz.model.MovimientoAnual;
 import cl.duoc.bancoxyz.model.Transaccion;
 import cl.duoc.bancoxyz.repository.BancoRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,19 +13,18 @@ import java.util.Optional;
 @Service
 public class BancoService {
 
-    private static final Logger log = LoggerFactory.getLogger(BancoService.class);
     private final BancoRepository bancoRepository;
 
     public BancoService(BancoRepository bancoRepository) {
         this.bancoRepository = bancoRepository;
     }
 
-    public Optional<Cuenta> obtenerCuentaPorId(Long cuentaId) {
-        return bancoRepository.buscarCuentaPorId(cuentaId);
-    }
-
     public List<Cuenta> obtenerTodasLasCuentas() {
         return bancoRepository.obtenerTodasLasCuentas();
+    }
+
+    public Optional<Cuenta> obtenerCuentaPorId(Long cuentaId) {
+        return bancoRepository.buscarCuentaPorId(cuentaId);
     }
 
     public List<Transaccion> obtenerTransaccionesPorCuenta(Long cuentaId) {
@@ -38,7 +35,7 @@ public class BancoService {
         return bancoRepository.buscarMovimientosAnualesPorCuenta(cuentaId);
     }
 
-    public synchronized Transaccion procesarRetiro(Long cuentaId, Double monto, String canal, String detalleTerminal) {
+    public synchronized Transaccion procesarRetiro(Long cuentaId, Long monto, String canal, String detalleTerminal) {
         if (monto == null || monto <= 0) {
             throw new IllegalArgumentException("El monto a retirar debe ser mayor a $0.");
         }
@@ -46,30 +43,28 @@ public class BancoService {
         Cuenta cuenta = bancoRepository.buscarCuentaPorId(cuentaId)
                 .orElseThrow(() -> new IllegalArgumentException("La cuenta número " + cuentaId + " no existe."));
 
-        double saldoDisponibleTotal = cuenta.getSaldo() + (cuenta.getLineaSobregiro() != null ? cuenta.getLineaSobregiro() : 0.0);
+        long saldoDisponibleTotal = cuenta.getSaldo() + (cuenta.getLineaSobregiro() != null ? cuenta.getLineaSobregiro() : 0L);
         if (saldoDisponibleTotal < monto) {
             throw new IllegalStateException("Fondos insuficientes. Saldo actual: $" + cuenta.getSaldo());
         }
 
         cuenta.setSaldo(cuenta.getSaldo() - monto);
-        bancoRepository.guardarCuenta(cuenta);
 
         Transaccion tx = new Transaccion(
-                null,
+                System.currentTimeMillis() % 1000000L,
                 cuentaId,
                 LocalDate.now().toString(),
                 monto,
-                "RETIRO",
-                "Retiro de fondos por canal " + canal + (detalleTerminal != null ? " (" + detalleTerminal + ")" : ""),
+                "retiro",
+                detalleTerminal != null ? detalleTerminal : "Retiro de efectivo en " + canal,
                 canal
         );
 
         bancoRepository.guardarTransaccion(tx);
-        log.info("Retiro procesado: Cuenta={}, Monto=${}, Canal={}, NuevoSaldo=${}", cuentaId, monto, canal, cuenta.getSaldo());
         return tx;
     }
 
-    public synchronized Transaccion procesarDeposito(Long cuentaId, Double monto, String canal) {
+    public synchronized Transaccion procesarDeposito(Long cuentaId, Long monto, String canal) {
         if (monto == null || monto <= 0) {
             throw new IllegalArgumentException("El monto a depositar debe ser mayor a $0.");
         }
@@ -78,20 +73,66 @@ public class BancoService {
                 .orElseThrow(() -> new IllegalArgumentException("La cuenta número " + cuentaId + " no existe."));
 
         cuenta.setSaldo(cuenta.getSaldo() + monto);
-        bancoRepository.guardarCuenta(cuenta);
 
         Transaccion tx = new Transaccion(
-                null,
+                System.currentTimeMillis() % 1000000L,
                 cuentaId,
                 LocalDate.now().toString(),
                 monto,
-                "DEPOSITO",
-                "Depósito de fondos por canal " + canal,
+                "abono",
+                "Depósito de fondos vía " + canal,
                 canal
         );
 
         bancoRepository.guardarTransaccion(tx);
-        log.info("Depósito procesado: Cuenta={}, Monto=${}, Canal={}, NuevoSaldo=${}", cuentaId, monto, canal, cuenta.getSaldo());
         return tx;
+    }
+
+    public synchronized Transaccion procesarTransferencia(Long cuentaOrigenId, Long cuentaDestinoId, Long monto, String descripcion) {
+        if (cuentaOrigenId.equals(cuentaDestinoId)) {
+            throw new IllegalArgumentException("No se puede transferir a la misma cuenta de origen.");
+        }
+
+        if (monto == null || monto <= 0) {
+            throw new IllegalArgumentException("El monto a transferir debe ser mayor a $0.");
+        }
+
+        Cuenta origen = bancoRepository.buscarCuentaPorId(cuentaOrigenId)
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta origen no encontrada: " + cuentaOrigenId));
+
+        Cuenta destino = bancoRepository.buscarCuentaPorId(cuentaDestinoId)
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta destino no encontrada: " + cuentaDestinoId));
+
+        long saldoDisponible = origen.getSaldo() + (origen.getLineaSobregiro() != null ? origen.getLineaSobregiro() : 0L);
+        if (saldoDisponible < monto) {
+            throw new IllegalStateException("Saldo insuficiente para transferir $" + monto);
+        }
+
+        origen.setSaldo(origen.getSaldo() - monto);
+        destino.setSaldo(destino.getSaldo() + monto);
+
+        Transaccion txOrigen = new Transaccion(
+                System.currentTimeMillis() % 1000000L,
+                cuentaOrigenId,
+                LocalDate.now().toString(),
+                monto,
+                "transferencia_saliente",
+                descripcion != null ? descripcion : "Transferencia a cuenta " + cuentaDestinoId,
+                "MOVIL"
+        );
+        bancoRepository.guardarTransaccion(txOrigen);
+
+        Transaccion txDestino = new Transaccion(
+                (System.currentTimeMillis() + 1) % 1000000L,
+                cuentaDestinoId,
+                LocalDate.now().toString(),
+                monto,
+                "transferencia_entrante",
+                "Transferencia recibida desde cuenta " + cuentaOrigenId,
+                "MOVIL"
+        );
+        bancoRepository.guardarTransaccion(txDestino);
+
+        return txOrigen;
     }
 }

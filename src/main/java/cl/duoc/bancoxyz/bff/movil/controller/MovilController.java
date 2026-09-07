@@ -44,7 +44,7 @@ public class MovilController {
     public ResponseEntity<Map<String, Object>> obtenerSaldoRapido(
             @Parameter(description = "ID de la cuenta bancaria", example = "101")
             @PathVariable Long cuentaId) {
-        Double saldo = movilBffService.consultarSaldoMovil(cuentaId);
+        Long saldo = movilBffService.consultarSaldoMovil(cuentaId);
         return ResponseEntity.ok(Map.of(
                 "cuentaId", cuentaId,
                 "saldoDisponible", saldo
@@ -58,7 +58,7 @@ public class MovilController {
             @Parameter(description = "ID de la cuenta origen", example = "101")
             @PathVariable Long cuentaId,
             @RequestBody SolicitudTransferenciaMovilDto solicitud) {
-        TransaccionMovilDto respuesta = movilBffService.realizarTransferenciaMovil(cuentaId, solicitud);
+        TransaccionMovilDto respuesta = movilBffService.transferirMovil(cuentaId, solicitud);
         return ResponseEntity.ok(respuesta);
     }
 }

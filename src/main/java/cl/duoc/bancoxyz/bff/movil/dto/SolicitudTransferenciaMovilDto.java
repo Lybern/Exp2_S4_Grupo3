@@ -2,33 +2,25 @@ package cl.duoc.bancoxyz.bff.movil.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Datos para realizar una transferencia rápida desde la app móvil")
+@Schema(description = "Cuerpo de solicitud para realizar transferencias desde la app móvil")
 public class SolicitudTransferenciaMovilDto {
 
-    @Schema(description = "Monto a transferir", example = "15000.0", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double monto;
-
-    @Schema(description = "Número de cuenta destinataria", example = "105", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "ID de la cuenta destinataria", example = "102", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long cuentaDestinoId;
 
-    @Schema(description = "Comentario opcional", example = "Pago almuerzo")
+    @Schema(description = "Monto a transferir en pesos chilenos", example = "25000", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long monto;
+
+    @Schema(description = "Comentario o asunto opcional de la transferencia", example = "Pago almuerzo")
     private String comentario;
 
     public SolicitudTransferenciaMovilDto() {
     }
 
-    public SolicitudTransferenciaMovilDto(Double monto, Long cuentaDestinoId, String comentario) {
-        this.monto = monto;
+    public SolicitudTransferenciaMovilDto(Long cuentaDestinoId, Long monto, String comentario) {
         this.cuentaDestinoId = cuentaDestinoId;
-        this.comentario = comentario;
-    }
-
-    public Double getMonto() {
-        return monto;
-    }
-
-    public void setMonto(Double monto) {
         this.monto = monto;
+        this.comentario = comentario;
     }
 
     public Long getCuentaDestinoId() {
@@ -37,6 +29,14 @@ public class SolicitudTransferenciaMovilDto {
 
     public void setCuentaDestinoId(Long cuentaDestinoId) {
         this.cuentaDestinoId = cuentaDestinoId;
+    }
+
+    public Long getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Long monto) {
+        this.monto = monto;
     }
 
     public String getComentario() {

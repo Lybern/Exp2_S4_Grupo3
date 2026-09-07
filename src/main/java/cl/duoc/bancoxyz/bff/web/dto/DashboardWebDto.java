@@ -3,25 +3,25 @@ package cl.duoc.bancoxyz.bff.web.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 
-@Schema(description = "Métricas consolidadas para el Dashboard Administrativo Web")
+@Schema(description = "Métricas globales para el panel administrativo web")
 public class DashboardWebDto {
 
-    @Schema(description = "Total de cuentas administradas", example = "100")
+    @Schema(description = "Total de cuentas activas en el sistema", example = "150")
     private Integer totalCuentas;
 
-    @Schema(description = "Monto total custodiado en el banco", example = "15000000.0")
-    private Double capitalTotalCustodiado;
+    @Schema(description = "Capital total bajo custodia en pesos", example = "750000000")
+    private Long capitalTotalCustodiado;
 
-    @Schema(description = "Promedio de saldo por cuenta", example = "150000.0")
-    private Double saldoPromedio;
+    @Schema(description = "Saldo promedio por cuenta", example = "5000000")
+    private Long saldoPromedio;
 
-    @Schema(description = "Distribución de cuentas por tipo")
+    @Schema(description = "Distribución de cuentas por tipo de producto")
     private Map<String, Long> distribucionPorTipo;
 
     public DashboardWebDto() {
     }
 
-    public DashboardWebDto(Integer totalCuentas, Double capitalTotalCustodiado, Double saldoPromedio, Map<String, Long> distribucionPorTipo) {
+    public DashboardWebDto(Integer totalCuentas, Long capitalTotalCustodiado, Long saldoPromedio, Map<String, Long> distribucionPorTipo) {
         this.totalCuentas = totalCuentas;
         this.capitalTotalCustodiado = capitalTotalCustodiado;
         this.saldoPromedio = saldoPromedio;
@@ -36,19 +36,19 @@ public class DashboardWebDto {
         this.totalCuentas = totalCuentas;
     }
 
-    public Double getCapitalTotalCustodiado() {
+    public Long getCapitalTotalCustodiado() {
         return capitalTotalCustodiado;
     }
 
-    public void setCapitalTotalCustodiado(Double capitalTotalCustodiado) {
+    public void setCapitalTotalCustodiado(Long capitalTotalCustodiado) {
         this.capitalTotalCustodiado = capitalTotalCustodiado;
     }
 
-    public Double getSaldoPromedio() {
+    public Long getSaldoPromedio() {
         return saldoPromedio;
     }
 
-    public void setSaldoPromedio(Double saldoPromedio) {
+    public void setSaldoPromedio(Long saldoPromedio) {
         this.saldoPromedio = saldoPromedio;
     }
 

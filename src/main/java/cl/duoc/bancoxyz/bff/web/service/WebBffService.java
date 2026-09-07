@@ -9,7 +9,7 @@ import cl.duoc.bancoxyz.model.Transaccion;
 import cl.duoc.bancoxyz.service.BancoService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,44 +23,40 @@ public class WebBffService {
         this.bancoService = bancoService;
     }
 
-    public DetalleCuentaWebDto obtenerDetalleCompletoWeb(Long cuentaId) {
+    public DetalleCuentaWebDto obtenerDetalleWeb(Long cuentaId) {
         Cuenta cuenta = bancoService.obtenerCuentaPorId(cuentaId)
-                .orElseThrow(() -> new IllegalArgumentException("Cuenta Web no encontrada con ID: " + cuentaId));
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada con ID: " + cuentaId));
 
-        List<Transaccion> transacciones = bancoService.obtenerTransaccionesPorCuenta(cuentaId);
-        List<MovimientoAnual> anuales = bancoService.obtenerMovimientosAnuales(cuentaId);
+        List<TransaccionWebDto> transacciones = listarTodasTransaccionesWeb(cuentaId);
 
-        List<TransaccionWebDto> listaTxDto = transacciones.stream()
-                .map(this::convertirTransaccionWeb)
-                .collect(Collectors.toList());
-
-        double sobregiro = cuenta.getLineaSobregiro() != null ? cuenta.getLineaSobregiro() : 0.0;
-        double saldoTotal = cuenta.getSaldo() + sobregiro;
+        long sobregiro = cuenta.getLineaSobregiro() != null ? cuenta.getLineaSobregiro() : 0L;
+        long saldoTotal = cuenta.getSaldo() + sobregiro;
         double tasa = cuenta.getTasaInteres() != null ? cuenta.getTasaInteres() : 0.0;
         double interesEstimado = Math.round((cuenta.getSaldo() * (tasa / 100.0) / 12.0) * 100.0) / 100.0;
 
-        Map<String, Object> metadata = Map.of(
-                "canal", "WEB_DESKTOP",
-                "fechaConsulta", LocalDateTime.now().toString(),
-                "seguridadNivel", "TLS_1_3_WEB_SESSION",
-                "soporteReportes", true
-        );
+        List<MovimientoAnual> anuales = bancoService.obtenerMovimientosAnuales(cuentaId);
+
+        Map<String, Object> metadatos = new HashMap<>();
+        metadatos.put("canalRecomendado", "WEB_CLIENTES");
+        metadatos.put("permiteTransferenciasMasivas", true);
+        metadatos.put("descargaCartolaPDF", "/api/v1/web/cuentas/" + cuentaId + "/pdf");
+        metadatos.put("notificacionesPendientes", 0);
 
         return new DetalleCuentaWebDto(
                 cuenta.getCuentaId(),
                 cuenta.getNombreTitular(),
                 cuenta.getEdad(),
-                cuenta.getTipo().toUpperCase(),
+                cuenta.getTipo(),
                 cuenta.getSaldo(),
                 sobregiro,
                 saldoTotal,
                 tasa,
                 interesEstimado,
                 cuenta.getEstado(),
-                listaTxDto.size(),
-                listaTxDto,
+                transacciones.size(),
+                transacciones,
                 anuales,
-                metadata
+                metadatos
         );
     }
 
@@ -73,32 +69,41 @@ public class WebBffService {
     public DashboardWebDto obtenerDashboardWeb() {
         List<Cuenta> todas = bancoService.obtenerTodasLasCuentas();
         int totalCuentas = todas.size();
-        double capitalTotal = todas.stream().mapToDouble(Cuenta::getSaldo).sum();
-        double promedio = totalCuentas > 0 ? capitalTotal / totalCuentas : 0.0;
+        long capitalTotal = todas.stream().mapToLong(Cuenta::getSaldo).sum();
+        long promedio = totalCuentas > 0 ? capitalTotal / totalCuentas : 0L;
 
         Map<String, Long> distribucion = todas.stream()
                 .collect(Collectors.groupingBy(c -> c.getTipo().toUpperCase(), Collectors.counting()));
 
         return new DashboardWebDto(
                 totalCuentas,
-                Math.round(capitalTotal * 100.0) / 100.0,
-                Math.round(promedio * 100.0) / 100.0,
+                capitalTotal,
+                promedio,
                 distribucion
         );
     }
 
     private TransaccionWebDto convertirTransaccionWeb(Transaccion tx) {
-        String categoria = "debito".equalsIgnoreCase(tx.getTipo()) || "retiro".equalsIgnoreCase(tx.getTipo())
-                ? "EGRESO_FONDOS" : "INGRESO_FONDOS";
-
+        String categoria = clasificarCategoria(tx.getDescripcion(), tx.getTipo());
         return new TransaccionWebDto(
                 tx.getId(),
                 tx.getFecha(),
                 tx.getMonto(),
-                tx.getTipo().toUpperCase(),
+                tx.getTipo(),
                 tx.getDescripcion(),
-                tx.getCanal() != null ? tx.getCanal() : "SISTEMA",
+                tx.getCanal() != null ? tx.getCanal() : "CORE_BANCARIO",
                 categoria
         );
+    }
+
+    private String clasificarCategoria(String desc, String tipo) {
+        if (desc == null) return "General";
+        String lower = desc.toLowerCase();
+        if (lower.contains("supermercado") || lower.contains("almacen") || lower.contains("restaurante")) return "Alimentación";
+        if (lower.contains("sueldo") || lower.contains("remuneracion") || lower.contains("deposito")) return "Ingresos";
+        if (lower.contains("farmacia") || lower.contains("salud") || lower.contains("medico")) return "Salud";
+        if (lower.contains("transferencia")) return "Transferencias";
+        if (lower.contains("cajero") || lower.contains("retiro")) return "Efectivo";
+        return "Servicios/Otros";
     }
 }

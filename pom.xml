@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>cl.duoc.b3</groupId>
-	<artifactId>bffmobile</artifactId>
+	<artifactId>Exp2_S4_Grupo3</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bffmobile</name>
-	<description/>
+	<name>Exp2_S4_Grupo3</name>
+	<description>Implementación de Arquitectura BFF - Banco XYZ - Grupo 3</description>
 	<url/>
 	<licenses>
 		<license/>

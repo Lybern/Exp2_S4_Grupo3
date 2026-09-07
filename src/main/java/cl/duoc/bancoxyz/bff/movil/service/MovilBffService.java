@@ -22,49 +22,54 @@ public class MovilBffService {
 
     public ResumenCuentaMovilDto obtenerResumenMovil(Long cuentaId) {
         Cuenta cuenta = bancoService.obtenerCuentaPorId(cuentaId)
-                .orElseThrow(() -> new IllegalArgumentException("Cuenta móvil no encontrada con ID: " + cuentaId));
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada con ID: " + cuentaId));
 
-        List<Transaccion> transacciones = bancoService.obtenerTransaccionesPorCuenta(cuentaId);
-        List<TransaccionMovilDto> ultimos3 = transacciones.stream()
+        List<TransaccionMovilDto> ultimosMovimientos = bancoService.obtenerTransaccionesPorCuenta(cuentaId).stream()
                 .limit(3)
                 .map(this::convertirTransaccionMovil)
                 .collect(Collectors.toList());
 
-        String mensaje = cuenta.getTipo().contains("ahorro")
-                ? "Tu cuenta genera " + cuenta.getTasaInteres() + "% de interés anual."
-                : "Línea de sobregiro activa: $" + cuenta.getLineaSobregiro();
+        String titularAbreviado = cuenta.getNombreTitular();
+        if (titularAbreviado != null && titularAbreviado.contains(" ")) {
+            String[] partes = titularAbreviado.split(" ");
+            titularAbreviado = partes[0] + " " + partes[partes.length - 1];
+        }
 
         return new ResumenCuentaMovilDto(
                 cuenta.getCuentaId(),
-                cuenta.getNombreTitular(),
+                titularAbreviado,
                 cuenta.getSaldo(),
-                cuenta.getTipo().toUpperCase(),
-                ultimos3,
-                mensaje
+                cuenta.getTipo(),
+                ultimosMovimientos,
+                "Bienvenido(a) a tu Banca Móvil. Datos al día."
         );
     }
 
-    public Double consultarSaldoMovil(Long cuentaId) {
+    public Long consultarSaldoMovil(Long cuentaId) {
         return bancoService.obtenerCuentaPorId(cuentaId)
                 .map(Cuenta::getSaldo)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada con ID: " + cuentaId));
     }
 
-    public TransaccionMovilDto realizarTransferenciaMovil(Long cuentaOrigenId, SolicitudTransferenciaMovilDto solicitud) {
-        Transaccion debito = bancoService.procesarRetiro(cuentaOrigenId, solicitud.getMonto(), "MOVIL_APP", null);
-        bancoService.procesarDeposito(solicitud.getCuentaDestinoId(), solicitud.getMonto(), "MOVIL_TRANSFER");
-        return convertirTransaccionMovil(debito);
+    public TransaccionMovilDto transferirMovil(Long cuentaOrigenId, SolicitudTransferenciaMovilDto solicitud) {
+        Transaccion tx = bancoService.procesarTransferencia(
+                cuentaOrigenId,
+                solicitud.getCuentaDestinoId(),
+                solicitud.getMonto(),
+                "TRANSFERENCIA MOVIL: " + (solicitud.getComentario() != null ? solicitud.getComentario() : "Sin glosa")
+        );
+        return convertirTransaccionMovil(tx);
     }
 
     private TransaccionMovilDto convertirTransaccionMovil(Transaccion tx) {
-        boolean esCargo = "retiro".equalsIgnoreCase(tx.getTipo()) || "debito".equalsIgnoreCase(tx.getTipo());
-        double montoFinal = esCargo ? -Math.abs(tx.getMonto()) : Math.abs(tx.getMonto());
+        boolean esCargo = "retiro".equalsIgnoreCase(tx.getTipo()) || "debito".equalsIgnoreCase(tx.getTipo()) || "transferencia_saliente".equalsIgnoreCase(tx.getTipo());
+        long montoFinal = esCargo ? -Math.abs(tx.getMonto()) : Math.abs(tx.getMonto());
 
         return new TransaccionMovilDto(
                 tx.getId(),
                 tx.getFecha(),
                 montoFinal,
-                tx.getTipo().toUpperCase(),
+                tx.getTipo(),
                 tx.getDescripcion()
         );
     }

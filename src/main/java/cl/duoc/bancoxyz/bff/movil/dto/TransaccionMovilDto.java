@@ -2,33 +2,33 @@ package cl.duoc.bancoxyz.bff.movil.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Transacción simplificada para vista móvil")
+@Schema(description = "Representación mínima de un movimiento bancario para la app móvil")
 public class TransaccionMovilDto {
 
-    @Schema(description = "ID de la transacción", example = "105")
+    @Schema(description = "ID de la transacción", example = "5001")
     private Long id;
 
-    @Schema(description = "Fecha de la operación", example = "2024-06-30")
+    @Schema(description = "Fecha de la operación", example = "2024-03-01")
     private String fecha;
 
-    @Schema(description = "Monto con signo (+ abono, - cargo)", example = "-15000.0")
-    private Double monto;
+    @Schema(description = "Monto en pesos (positivo para abono, negativo para cargo)", example = "-15000")
+    private Long monto;
 
-    @Schema(description = "Tipo de operación", example = "DEBITO")
+    @Schema(description = "Tipo de transacción", example = "debito")
     private String tipo;
 
-    @Schema(description = "Detalle breve", example = "Operación registrada: credito")
-    private String detalle;
+    @Schema(description = "Glosa breve del movimiento", example = "Supermercado")
+    private String descripcion;
 
     public TransaccionMovilDto() {
     }
 
-    public TransaccionMovilDto(Long id, String fecha, Double monto, String tipo, String detalle) {
+    public TransaccionMovilDto(Long id, String fecha, Long monto, String tipo, String descripcion) {
         this.id = id;
         this.fecha = fecha;
         this.monto = monto;
         this.tipo = tipo;
-        this.detalle = detalle;
+        this.descripcion = descripcion;
     }
 
     public Long getId() {
@@ -47,11 +47,11 @@ public class TransaccionMovilDto {
         this.fecha = fecha;
     }
 
-    public Double getMonto() {
+    public Long getMonto() {
         return monto;
     }
 
-    public void setMonto(Double monto) {
+    public void setMonto(Long monto) {
         this.monto = monto;
     }
 
@@ -63,11 +63,11 @@ public class TransaccionMovilDto {
         this.tipo = tipo;
     }
 
-    public String getDetalle() {
-        return detalle;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setDetalle(String detalle) {
-        this.detalle = detalle;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }

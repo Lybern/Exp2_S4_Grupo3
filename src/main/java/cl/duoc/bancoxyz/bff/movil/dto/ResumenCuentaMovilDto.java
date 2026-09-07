@@ -3,31 +3,31 @@ package cl.duoc.bancoxyz.bff.movil.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
-@Schema(description = "Resumen de cuenta optimizado para app móvil (payload ligero)")
+@Schema(description = "DTO ultracompacto para la aplicación móvil")
 public class ResumenCuentaMovilDto {
 
-    @Schema(description = "Número de cuenta", example = "101")
+    @Schema(description = "Número identificador de la cuenta", example = "101")
     private Long numeroCuenta;
 
-    @Schema(description = "Nombre del titular", example = "Bob Johnson")
+    @Schema(description = "Nombre abreviado del titular", example = "Carlos Soto")
     private String titular;
 
-    @Schema(description = "Saldo disponible", example = "75000.50")
-    private Double saldoDisponible;
+    @Schema(description = "Saldo disponible actual en pesos chilenos", example = "1500000")
+    private Long saldoDisponible;
 
-    @Schema(description = "Tipo de producto bancario", example = "AHORRO")
+    @Schema(description = "Tipo de producto financiero", example = "cuenta_corriente")
     private String tipoCuenta;
 
-    @Schema(description = "Últimos movimientos recientes (solo los 3 más nuevos para ahorrar datos)")
+    @Schema(description = "Últimos movimientos más recientes")
     private List<TransaccionMovilDto> ultimosMovimientos;
 
-    @Schema(description = "Mensaje o alerta móvil", example = "Tu cuenta acumula 3.8% de interés anual")
+    @Schema(description = "Mensaje contextual para el usuario", example = "Saldo actualizado correctamente")
     private String mensajeInformativo;
 
     public ResumenCuentaMovilDto() {
     }
 
-    public ResumenCuentaMovilDto(Long numeroCuenta, String titular, Double saldoDisponible, String tipoCuenta, List<TransaccionMovilDto> ultimosMovimientos, String mensajeInformativo) {
+    public ResumenCuentaMovilDto(Long numeroCuenta, String titular, Long saldoDisponible, String tipoCuenta, List<TransaccionMovilDto> ultimosMovimientos, String mensajeInformativo) {
         this.numeroCuenta = numeroCuenta;
         this.titular = titular;
         this.saldoDisponible = saldoDisponible;
@@ -52,11 +52,11 @@ public class ResumenCuentaMovilDto {
         this.titular = titular;
     }
 
-    public Double getSaldoDisponible() {
+    public Long getSaldoDisponible() {
         return saldoDisponible;
     }
 
-    public void setSaldoDisponible(Double saldoDisponible) {
+    public void setSaldoDisponible(Long saldoDisponible) {
         this.saldoDisponible = saldoDisponible;
     }
 

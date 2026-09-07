@@ -5,7 +5,7 @@ public class Transaccion {
     private Long id;
     private Long cuentaId;
     private String fecha;
-    private Double monto;
+    private Long monto;
     private String tipo;
     private String descripcion;
     private String canal;
@@ -13,7 +13,7 @@ public class Transaccion {
     public Transaccion() {
     }
 
-    public Transaccion(Long id, Long cuentaId, String fecha, Double monto, String tipo, String descripcion, String canal) {
+    public Transaccion(Long id, Long cuentaId, String fecha, Long monto, String tipo, String descripcion, String canal) {
         this.id = id;
         this.cuentaId = cuentaId;
         this.fecha = fecha;
@@ -47,11 +47,11 @@ public class Transaccion {
         this.fecha = fecha;
     }
 
-    public Double getMonto() {
+    public Long getMonto() {
         return monto;
     }
 
-    public void setMonto(Double monto) {
+    public void setMonto(Long monto) {
         this.monto = monto;
     }
 

@@ -72,7 +72,7 @@ src/main/java/cl/duoc/bancoxyz/
     └── cajero/                          # 🏧 MÓDULO CAJERO ATM
         ├── controller/CajeroController.java
         ├── service/CajeroBffService.java
-        └── dto/ (SaldoCajeroDto, SolicitudRetiroDto, RespuestaRetiroDto, SolicitudDepositoDto)
+        └── dto/ (ConsultaSaldoCajeroDto, SolicitudRetiroCajeroDto, RespuestaRetiroDto)
 ```
 
 ---
@@ -121,11 +121,21 @@ Una vez iniciado el servidor, accede a la interfaz gráfica interactiva de Swagg
   ```bash
   curl -X GET "http://localhost:8080/api/v1/movil/cuentas/101/saldo"
   ```
+* **Transferencia Rápida:**
+  ```bash
+  curl -X POST "http://localhost:8080/api/v1/movil/cuentas/101/transferencia" \
+       -H "Content-Type: application/json" \
+       -d '{"cuentaDestinoId": 102, "monto": 25000, "comentario": "Pago almuerzo"}'
+  ```
 
 ### B. Canal Web (BFF Web)
 * **Obtener Detalle Completo con Intereses e Historial Anual:**
   ```bash
   curl -X GET "http://localhost:8080/api/v1/web/cuentas/101"
+  ```
+* **Listado de Todas las Transacciones Históricas:**
+  ```bash
+  curl -X GET "http://localhost:8080/api/v1/web/cuentas/101/transacciones"
   ```
 * **Dashboard Global de Administración:**
   ```bash
@@ -135,11 +145,11 @@ Una vez iniciado el servidor, accede a la interfaz gráfica interactiva de Swagg
 ### C. Canal Cajero Automático (BFF ATM)
 * **Consulta de Saldo en Cajero:**
   ```bash
-  curl -X GET "http://localhost:8080/api/v1/cajero/cuentas/101/saldo?terminalId=ATM-SANTIAGO-042"
+  curl -X GET "http://localhost:8080/api/v1/cajero/cuentas/101/saldo?terminalId=ATM-SCL-01"
   ```
-* **Retiro de Efectivo (Giro en billetes de $5.000):**
+* **Retiro de Efectivo (Giro en múltiplos de $5.000 con PIN de 4 dígitos):**
   ```bash
   curl -X POST "http://localhost:8080/api/v1/cajero/cuentas/101/retiro" \
        -H "Content-Type: application/json" \
-       -d '{"monto": 25000.0, "codigoTerminal": "ATM-CENTRO-01", "pin": "1234"}'
+       -d '{"monto": 40000, "pin": "1234", "terminalId": "ATM-SCL-01"}'
   ```

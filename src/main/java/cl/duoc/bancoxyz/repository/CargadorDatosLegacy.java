@@ -55,9 +55,9 @@ public class CargadorDatosLegacy {
                             nombre = "Cliente " + cuentaId;
                         }
 
-                        double saldo = 0.0;
+                        long saldo = 0L;
                         if (!datos[2].trim().isEmpty()) {
-                            saldo = Math.max(0.0, Double.parseDouble(datos[2].trim()));
+                            saldo = (long) Math.max(0.0, Double.parseDouble(datos[2].trim()));
                         }
 
                         int edad = 30;
@@ -71,7 +71,7 @@ public class CargadorDatosLegacy {
                         String tipo = datos[4].trim().toLowerCase();
                         if (tipo.equals("-1") || tipo.isEmpty()) tipo = "cuenta_corriente";
 
-                        double sobregiro = tipo.contains("corriente") ? 300000.0 : 0.0;
+                        long sobregiro = tipo.contains("corriente") ? 300000L : 0L;
                         double tasaInteres = tipo.contains("ahorro") ? 3.8 : 0.5;
 
                         Cuenta cuenta = new Cuenta(
@@ -107,7 +107,7 @@ public class CargadorDatosLegacy {
                     try {
                         Long id = Long.parseLong(datos[0].trim());
                         String fecha = datos[1].trim();
-                        double monto = Math.abs(Double.parseDouble(datos[2].trim()));
+                        long monto = (long) Math.abs(Double.parseDouble(datos[2].trim()));
                         String tipo = datos[3].trim().toLowerCase();
 
                         Long cuentaId = (id % 150) + 100;
@@ -145,7 +145,7 @@ public class CargadorDatosLegacy {
                         Long cuentaId = Long.parseLong(datos[0].trim());
                         String fecha = datos[1].trim();
                         String transaccion = datos[2].trim();
-                        double monto = Math.abs(Double.parseDouble(datos[3].trim()));
+                        long monto = (long) Math.abs(Double.parseDouble(datos[3].trim()));
                         String descripcion = datos[4].trim();
                         if (descripcion.isEmpty()) descripcion = "Movimiento histórico anual";
 

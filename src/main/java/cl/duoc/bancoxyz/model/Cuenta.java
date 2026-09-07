@@ -4,17 +4,17 @@ public class Cuenta {
 
     private Long cuentaId;
     private String nombreTitular;
-    private Double saldo;
+    private Long saldo;
     private Integer edad;
     private String tipo;
-    private Double lineaSobregiro;
+    private Long lineaSobregiro;
     private Double tasaInteres;
     private String estado;
 
     public Cuenta() {
     }
 
-    public Cuenta(Long cuentaId, String nombreTitular, Double saldo, Integer edad, String tipo, Double lineaSobregiro, Double tasaInteres, String estado) {
+    public Cuenta(Long cuentaId, String nombreTitular, Long saldo, Integer edad, String tipo, Long lineaSobregiro, Double tasaInteres, String estado) {
         this.cuentaId = cuentaId;
         this.nombreTitular = nombreTitular;
         this.saldo = saldo;
@@ -41,11 +41,11 @@ public class Cuenta {
         this.nombreTitular = nombreTitular;
     }
 
-    public Double getSaldo() {
+    public Long getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(Long saldo) {
         this.saldo = saldo;
     }
 
@@ -65,11 +65,11 @@ public class Cuenta {
         this.tipo = tipo;
     }
 
-    public Double getLineaSobregiro() {
+    public Long getLineaSobregiro() {
         return lineaSobregiro;
     }
 
-    public void setLineaSobregiro(Double lineaSobregiro) {
+    public void setLineaSobregiro(Long lineaSobregiro) {
         this.lineaSobregiro = lineaSobregiro;
     }
 

@@ -35,7 +35,7 @@ public class WebController {
     public ResponseEntity<DetalleCuentaWebDto> obtenerDetalleCuenta(
             @Parameter(description = "ID de la cuenta bancaria", example = "101")
             @PathVariable Long cuentaId) {
-        return ResponseEntity.ok(webBffService.obtenerDetalleCompletoWeb(cuentaId));
+        return ResponseEntity.ok(webBffService.obtenerDetalleWeb(cuentaId));
     }
 
     @Operation(summary = "Listar todas las transacciones históricas de una cuenta",

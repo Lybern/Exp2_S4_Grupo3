@@ -2,34 +2,34 @@ package cl.duoc.bancoxyz.bff.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Detalle completo de transacción para portal web")
+@Schema(description = "Detalle extendido de una transacción para la plataforma Web")
 public class TransaccionWebDto {
 
-    @Schema(description = "ID único de la transacción", example = "105")
+    @Schema(description = "Identificador de la transacción", example = "5001")
     private Long id;
 
-    @Schema(description = "Fecha de la transacción", example = "2024-06-30")
+    @Schema(description = "Fecha de emisión", example = "2024-03-01")
     private String fecha;
 
-    @Schema(description = "Monto de la transacción", example = "30000.0")
-    private Double monto;
+    @Schema(description = "Monto de la transacción", example = "15000")
+    private Long monto;
 
-    @Schema(description = "Tipo de operación", example = "CREDITO")
+    @Schema(description = "Tipo de operación", example = "debito")
     private String tipo;
 
-    @Schema(description = "Descripción detallada", example = "Operación registrada: credito")
+    @Schema(description = "Detalle descriptivo", example = "Compra en Supermercado Líder")
     private String descripcion;
 
-    @Schema(description = "Canal de origen", example = "LEGACY_BATCH")
+    @Schema(description = "Canal en que se originó el movimiento", example = "POS-Fisico")
     private String canalOrigen;
 
-    @Schema(description = "Categoría financiera calculada", example = "INGRESO_FONDOS")
+    @Schema(description = "Categoría analítica para reportes web", example = "Alimentación")
     private String categoria;
 
     public TransaccionWebDto() {
     }
 
-    public TransaccionWebDto(Long id, String fecha, Double monto, String tipo, String descripcion, String canalOrigen, String categoria) {
+    public TransaccionWebDto(Long id, String fecha, Long monto, String tipo, String descripcion, String canalOrigen, String categoria) {
         this.id = id;
         this.fecha = fecha;
         this.monto = monto;
@@ -55,11 +55,11 @@ public class TransaccionWebDto {
         this.fecha = fecha;
     }
 
-    public Double getMonto() {
+    public Long getMonto() {
         return monto;
     }
 
-    public void setMonto(Double monto) {
+    public void setMonto(Long monto) {
         this.monto = monto;
     }
 
